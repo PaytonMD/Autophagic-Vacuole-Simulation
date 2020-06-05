@@ -6,13 +6,26 @@ import sys
 #   Eastern Michigan University
 #   Backues Lab  
 #   Author: Payton Dunning
-#   Last Date Modified: May 19th, 2020
+#   Last Date Modified: June 5th, 2020
 #
 #   A script for analyzing the contents of an Autophagic Vacuole Simulation (AVS) project formatted 
 #   Compucell 3D (CC3D) simulation. The script takes in a PIF file (.piff), that must contain "Body" and
 #   "Wall" cells, and takes a slice through the simulation comparable to a TEM image of a cell. The bodies
 #   within this slice are then analyzed to determine their relative areas. This area data is the recorded
 #   and reported for later compilation and statistical analysis.
+############################################################################################################
+#   This program is free software: you can redistribute it and/or modify
+#   it under the terms of the GNU General Public License as published by
+#   the Free Software Foundation, either version 3 of the License, or
+#   (at your option) any later version.
+#
+#   This program is distributed in the hope that it will be useful,
+#   but WITHOUT ANY WARRANTY; without even the implied warranty of
+#   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#   GNU General Public License for more details.
+#
+#   You should have received a copy of the GNU General Public License
+#   along with this program.  If not, see <https://www.gnu.org/licenses/>.
 ############################################################################################################
 
 #I realize it's unnecessary to have everything in this single function, but it'll be split up at some point.
@@ -185,6 +198,6 @@ def main():
     print("[\"Body Number\", \"Max Area\"]:")
     for result in bodyAreas:
             print(result)                    
-    print("DONE!")
+    print("\n\nDONE")
 #Calls the function main to initate program.
 main()
