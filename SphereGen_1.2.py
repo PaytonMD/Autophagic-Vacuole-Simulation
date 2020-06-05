@@ -7,7 +7,7 @@ from copy import deepcopy
 #   Eastern Michigan University
 #   Backues Lab  
 #   Author: Payton Dunning
-#   Last Date Modified: May 19th, 2020
+#   Last Date Modified: June 5th, 2020
 #
 #   Reads in numerical data representing spheres and outputs a CC3D compatible PIF file representing the
 #   various spheres. Sphere data is read in as lines from either a text file or typped into the console.
@@ -16,7 +16,19 @@ from copy import deepcopy
 #   vacuole of a cell undergoing the cellular process of autophagy. The wall of the vacuole itself
 #   can also be modeled here along with the autophagic bodies as a hollow sphere.
 ############################################################################################################
-
+#   This program is free software: you can redistribute it and/or modify
+#   it under the terms of the GNU General Public License as published by
+#   the Free Software Foundation, either version 3 of the License, or
+#   (at your option) any later version.
+#
+#   This program is distributed in the hope that it will be useful,
+#   but WITHOUT ANY WARRANTY; without even the implied warranty of
+#   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#   GNU General Public License for more details.
+#
+#   You should have received a copy of the GNU General Public License
+#   along with this program.  If not, see <https://www.gnu.org/licenses/>.
+############################################################################################################
 fileInput = "" #Name of input file.
 fileOutput = "" #Name of output file.
 
@@ -94,7 +106,8 @@ def useFile():
     if(wallData!="x"):
         buildWall(wallData, bodyNum)
         
-    inStream.close()    
+    inStream.close()
+    print("\n\nDONE")
 ###END OF fileSphere FUNCTION###
     
 '''Handles reading sphere data from console and converts it to CC3D PIFF coordinates.'''
@@ -141,6 +154,7 @@ def useConsole():
     #Begins the vacuole wall creation as a semi-hollowed out sphere.    
     if(wallData!="x"):
         buildWall(wallData, bodyNum)
+    print("\n\nDONE")
 ###END OF consoleSphere FUNCTION###
         
 '''Builds a hollow sphere around the set of regular spheres that represents a vacuole membrane wall.
