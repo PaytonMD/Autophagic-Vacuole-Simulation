@@ -90,7 +90,7 @@ def useFile():
             dim = (radii*2)+1
             
             #radii = findRadii(tVolume)
-            print("Radii for body #" + str(bodyNum) + " = " + str(int(radii)) + "\n")
+            #print("Radii for body #" + str(bodyNum) + " = " + str(int(radii)) + "\n")
             
             #numpy arrays are a specialized array type.
             starterGrid = np.zeros((dim, dim, dim)) # Builds the 3D numpy array.
@@ -120,36 +120,43 @@ def useConsole():
     #wallData will be used if a wall is built. Stores the first line from input file while other bodies are being built.
     wallData = "x"
     
-    print("Enter in all bodies in the format 'Radii X-Coord Y-Coord Z-Coord'. Type STOP when done.")
-    print("Each body and the vacuole wall should be entered on seperate lines.")
+    
     
     #If a wall is to be built, take first sphere entry to use for wall.
     if(wallCheck):
         print("Enter in sphere data to be used for a vacuole wall: ")
         wallData = input()
 
-    print("Enter in the first Body's sphere data: ")
-    sphereData = input()
-    bodyNum = 1
+    print("\nNow enter in all bodies in the format 'Radii X-Coord Y-Coord Z-Coord'. Type STOP when done.")
+    print("(Each body should be entered on seperate lines)")
     
-    while(sphereData!="STOP"):
-        sphereData = sphereData.split()
+    print("\nEnter in the first Body's sphere data: ")
+    sphereInput = input()
+    bodyNum = 1
+    sphereList = []
+    
+    while(sphereInput!="STOP"):
+        sphereList.append(sphereInput)       
+        
+        print("\nEnter the next Body's sphere data, or STOP:")
+        sphereInput = input()
+    
+    for sphere in sphereList:
+        sphereData = sphere.split()
+        print("Body #%d: %s %s %s %s" %(bodyNum, sphereData[0], sphereData[1], sphereData[2], sphereData[3]))
         centerPoint = [float(sphereData[1]), float(sphereData[2]), float(sphereData[3])]
-        radii = int(sphereData[0])
-        #radii = findRadii(tVolume)
-        dim = (radii*2)+1
+        radius = int(sphereData[0])
+
+        dim = (radius*2)+1
         
         starterGrid = np.zeros((dim, dim, dim)) # Builds the numpy array.
         sphereGrid = deepcopy(starterGrid) #Copy of the starterGrid.
             
             
-        sphereGrid = setUpGrid(sphereGrid, radii) #Fills the grid with 1 to make a "sphere" of given radius.
-        sphereToPif(sphereGrid, centerPoint, radii, bodyNum) #Writes out all 1s in the grid as a PIFF coordinate.
+        sphereGrid = setUpGrid(sphereGrid, radius) #Fills the grid with 1 to make a "sphere" of given radius.
+        sphereToPif(sphereGrid, centerPoint, radius, bodyNum) #Writes out all 1s in the grid as a PIFF coordinate.
         
         bodyNum += 1
-        
-        print("Enter the next Body's sphere data, or STOP:")
-        sphereData = input()
     
     #Begins the vacuole wall creation as a semi-hollowed out sphere.    
     if(wallData!="x"):
@@ -161,8 +168,9 @@ def useConsole():
     WallData contains the first line of user input (file or console) to be used in the wall building process.'''
 def buildWall(wallData, bodyCount):
     #Build default wall
-    print("\nWall Data: %s" %(wallData))
+    #print("\nWall Data: %s" %(wallData))
     sphereData = wallData.split()
+    print("Wall: %s %s %s %s" %(sphereData[0], sphereData[1], sphereData[2], sphereData[3]))
     radii = int(sphereData[0])
     xCenter = int(sphereData[1])
     yCenter = int(sphereData[2])
