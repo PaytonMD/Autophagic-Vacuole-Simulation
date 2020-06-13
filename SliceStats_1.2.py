@@ -59,6 +59,10 @@ def main():
     if(xRange <= 0):
         sys.exit("\n!!!This model does not support a minimum diameter threshold of %s" %(minDiam))
         
+    #The starting and ending X-coordinates viable for a slice to be taken at.
+    minX = centerX-int(xRange/2)
+    maxX = centerX+int(xRange/2)
+        
     #Stores all lines in input PIFF file that contain Wall data.
     wallText = []
     #Stores all lines in input PIFF file that contain Body data.
@@ -77,9 +81,7 @@ def main():
 
     inStream.close()                
 
-    #The starting and ending X-coordinates used for the main slice.
-    minX = centerX-int(xRange/2)
-    maxX = centerX+int(xRange/2)
+    
         
     print("\n\n\t minX = %d || maxX = %d \n" %(minX, maxX))
         
@@ -112,7 +114,7 @@ def main():
         bodyLine = bodyEntry.split()
         xValue = int(bodyLine[2])
         
-        if(xValue <= maxX and xValue >= minX):
+        if(xValue <= (centerX+2) and xValue >= (centerX-2)):
             bodyID = bodyLine[0]
             
             try:
