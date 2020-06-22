@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 import math
 import sys
+import random
 
 ############################################################################################################
 #   Eastern Michigan University
@@ -62,7 +63,29 @@ def main():
     #The starting and ending X-coordinates viable for a slice to be taken at.
     minX = centerX-int(xRange/2)
     maxX = centerX+int(xRange/2)
+    
+    
+    print(">>Finally, select an option for determining where a slice will be taken:")
+    print("\t[0 for slice to be taken at centerX coordinate.]")
+    print("\t[1 for slice to be taken at a randomly selected coordinate.]")
+    print("\t[2 for slice to be taken at a user specified coordinate.]")
+    #\n\t[0 for file input]\n\t[1 for console input]", end=''
         
+    sliceChoice = int(input())
+    sliceCoord = 0
+    
+    if(sliceChoice == 0):
+        sliceCoord = centerX
+        
+    elif(sliceChoice == 1):
+        sliceChoice = random.randint(minX, maxX)
+        
+    elif(sliceChoice == 2):
+        print("\n>>Enter the x coordinate you'd like the slice to be taken at:")
+        sliceCoord = int(input())
+    else:
+        sys.ext("\nInput was found to be invalid. Please enter in 0, 1, or 2 for your choice of slice selection method.")
+    
     #Stores all lines in input PIFF file that contain Wall data.
     wallText = []
     #Stores all lines in input PIFF file that contain Body data.
@@ -114,7 +137,7 @@ def main():
         bodyLine = bodyEntry.split()
         xValue = int(bodyLine[2])
         
-        if(xValue <= (centerX+2) and xValue >= (centerX-2)):
+        if(xValue <= (sliceCoord+2) and xValue >= (sliceCoord-2)):
             bodyID = bodyLine[0]
             
             try:
