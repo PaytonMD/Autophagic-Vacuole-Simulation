@@ -36,7 +36,8 @@ slice1 = function(input, zloc = "center", T = 5, vacmin = 50) {
       else rr = 0
       # if the ball isn't in the slice
       RR = c(RR,rr)
+      
    }
-   
-   list(rrmax=RR)
+   AA = pi*(RR)*(RR)
+   list(AAmax=AA)
 }
