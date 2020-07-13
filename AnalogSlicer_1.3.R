@@ -2,7 +2,7 @@
 # input = input text file, in Spheregen format, with the first line as a vacuole.  
 # balls - ball locations
 # r - ball radii
-# zloc - can be "center" or "random."  Defines the z location of the slice plane
+# zloc - can be "center, "random" or any specified value  Defines the z location of the slice plane
 # T - slice thickness
 # calculates the maximum radius of each ball that is caught in the slice
 slice1 = function(input, zloc = "center", T = 5, vacmin = 50) {
@@ -16,8 +16,10 @@ slice1 = function(input, zloc = "center", T = 5, vacmin = 50) {
       z = inputfile[1,2] # takes the plane through which to slice from the center of the vacuole  
    } else if (zloc == "random") {
    zbound = scale-sqrt(scale^2-vacmin^2)
-   z = (runif(1, min=(0+zbound), max=(cellSize-zbound))) # Random Z, with bounds that guaranty that a slice of the vacuole at least vacmin large is cut.  But for now I'm just putting Z through the origin for reproducibility
+   z = floor(runif(1, min=(0+zbound), max=(cellSize-zbound))) # Random interger Z, with bounds that guaranty that a slice of the vacuole at least vacmin large is cut.  But for now I'm just putting Z through the origin for reproducibility
    print (c("The slice location is", z))
+   } else {
+      z = zloc
    }
    RR = NULL
    for (j in 1:length(r)) {
