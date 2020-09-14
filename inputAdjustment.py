@@ -99,8 +99,13 @@ def main():
         newMaxY = 0
         newMaxZ = 0
         #Redetermines the maximum dimensions of the future CC3D lattice based on the largest XYZ values found among the spheres.
+        #Output to default file for now:
+        outStream = open("AdjustOut.txt", "w")
         for sphere in scaledData:
             print(sphere)
+            outLine = str(sphere[0]) + " " + str(sphere[1]) + " " + str(sphere[2]) + " " + str(sphere[3]) + "\n"
+            outStream.write(outLine)
+            
             tempX = sphere[1] + sphere[0]
             tempY = sphere[2] + sphere[0]
             tempZ = sphere[3] + sphere[0]
@@ -115,15 +120,18 @@ def main():
                 newMaxZ = tempZ
             
         print("\nThe NEW Lattice will likely need to be at least %d x %d x %d (X x Y x Z) in size." %(newMaxX, newMaxY, newMaxZ))
+        
+        
+        outStream.close()
     print("\n\nDONE!!!")
 ###END OF main###
 
 #For a given line of sphere data passed into diagnose, function determines the coordinate shifts needed for the sphere in order
 #to produce the sphere entirely in the 1st quandrant (no negative coordinates in any dimension).
 def diagnose(lineData):
-    xChange = ((int(lineData[1]) - int(lineData[0])) * -1) + 5
-    yChange = ((int(lineData[2]) - int(lineData[0])) * -1) + 5
-    zChange = ((int(lineData[3]) - int(lineData[0])) * -1) + 5
+    xChange = ((int(float(lineData[1])) - int(float(lineData[0]))) * -1) + 5
+    yChange = ((int(float(lineData[2])) - int(float(lineData[0]))) * -1) + 5
+    zChange = ((int(float(lineData[3])) - int(float(lineData[0]))) * -1) + 5
     changes = [xChange, yChange, zChange]
     return(changes)
 ###END OF diagnose###
@@ -134,11 +142,11 @@ def shift(Spheres, Changes):
     FinalData = []
     
     for sphere in Spheres:
-        tempX = int(sphere[1]) + Changes[0]
-        tempY = int(sphere[2]) + Changes[1]
-        tempZ = int(sphere[3]) + Changes[2]
+        tempX = int(float(sphere[1])) + Changes[0]
+        tempY = int(float(sphere[2])) + Changes[1]
+        tempZ = int(float(sphere[3])) + Changes[2]
 
-        tempLine = [int(sphere[0]), tempX, tempY, tempZ]
+        tempLine = [int(float(sphere[0])), tempX, tempY, tempZ]
         FinalData.append(tempLine)
     return(FinalData)
 ###END OF shift###
