@@ -1,0 +1,52 @@
+<CompuCell3D Revision="20190604" Version="4.0.0">
+   
+   <Metadata>
+        <NumberOfProcessors>1</NumberOfProcessors>
+        <DebugOutputFrequency>10</DebugOutputFrequency>
+    </Metadata>
+   
+   <Potts>
+      
+      <!-- Basic properties of CPM (GGH) algorithm -->
+      <Dimensions x="251" y="251" z="251"/>
+      <Steps>10000</Steps>
+      <Temperature>20.0</Temperature>
+      <NeighborOrder>4</NeighborOrder>
+      <EnergyFunctionCalculator Type="Statistics"/>
+   </Potts>
+   
+   <Plugin Name="CellType">
+      
+      <!-- Listing all cell types in the simulation -->
+      <CellType TypeId="0" TypeName="Medium"/>
+      <CellType TypeId="1" TypeName="Body"/>
+      <CellType Freeze="" TypeId="2" TypeName="Wall"/>
+   </Plugin>
+   
+   <Plugin Name="Volume"/>
+   <Plugin Name="VolumeTracker"/>
+   
+   <Plugin Name="Contact">
+      <!-- Specification of adhesion energies -->
+      <Energy Type1="Medium" Type2="Medium">0</Energy>
+      <Energy Type1="Medium" Type2="Body">10</Energy>
+      <Energy Type1="Medium" Type2="Wall">0</Energy>
+      <Energy Type1="Body" Type2="Body">1.0</Energy>
+      <Energy Type1="Body" Type2="Wall">1.0</Energy>
+      <Energy Type1="Wall" Type2="Wall">0</Energy>
+      <NeighborOrder>4</NeighborOrder>
+   </Plugin>
+   
+   <Steppable Type="PIFInitializer">
+      
+      <!-- Initial layout of cells using PIFF file. Piff files can be generated using PIFGEnerator -->
+      <PIFName>./Simulation/WallTestTwo.piff</PIFName>
+   </Steppable>
+   <!--<Steppable Frequency="5" Type="PIFDumper">-->
+   
+   <!-- Periodically stores cell layout configuration in a piff format -->
+   <!--<PIFName>DUMPTEST</PIFName>
+   <PIFFileExtension>piff</PIFFileExtension>-->
+<!--</Steppable>-->
+
+</CompuCell3D>
