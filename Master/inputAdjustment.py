@@ -13,16 +13,14 @@
 #   coordinates by 2. Other adjustments to the data may be added in time.
 
 fileInput = "" #Name of input file.
-#fileOutput = "" #Name of output file.
-#Script does not currently output to any file, though this will be added in a future version.
+fileOutput = "sphereData.txt" #Name of output file.
 
 def main():    
     
     print("\n>>Enter INPUT file path and name:", end='')
     fileInput = input()
     
-    #print("\n>>Enter OUTPUT file path and name:", end='')
-    #fileOutput = input()
+    print("\nAll output will be written to 'sphereData.txt'")
     
     #Read in all data from input file and store in Data
     ogData = [] #og as in original
@@ -41,11 +39,25 @@ def main():
     for sphere in ogData:
         print(sphere)
     
-    #An array of the x,y, and z coordinate shifts needed to be made to the ogData spheres.
+    #An array of the x, y, and z coordinate shifts needed to be made to the scaled spheres.
     maxChanges = [0, 0, 0]
     
-    for y in ogData:
-        potentialChanges = diagnose(y)
+    print("\nWould you like to scale down the coordinates [y/n]:")
+    
+    toScale = input()
+    scaledData = ogData
+    
+    if(toScale == "y" or toScale =="Y"):
+        print("\nBy what factor?")
+        #scaleFactor here being an integer that will be used to divide the values of all the spheres.
+        #A scaleFactor of 2 would cut the size of the spheres, and model, in half.
+        scaleFactor = int(input())
+        
+        scaledData = scaleDown(ogData, scaleFactor)
+    
+    for sphere in scaledData:
+        #The diagnose function determines how much the sphere data should be shifted based on an individual sphere's position and size.
+        potentialChanges = diagnose(sphere)
         if(potentialChanges[0] > maxChanges[0]):
             maxChanges[0] = potentialChanges[0]
             
@@ -54,8 +66,9 @@ def main():
 
         if(potentialChanges[2] > maxChanges[2]):
             maxChanges[2] = potentialChanges[2]
-            
-    shiftedData = shift(ogData, maxChanges)
+    
+    #The shift function shifts the sphere data as needed so that all spheres remain in the all positive coordinate quadrant 1.
+    shiftedData = shift(scaledData, maxChanges)
     
     #The largest predicated x, y, and z values among the sphere data. Used to predict the minimum size a CC3D simulation lattice
     #needs to be in order to fit this spherical data.
@@ -79,51 +92,21 @@ def main():
     
         if(tempZ > maxZ):
             maxZ = tempZ
-    
-    print("\nThe Lattice will likely need to be at least %d x %d x %d (X x Y x Z) in size." %(maxX, maxY, maxZ))
         
-    print("\nWould you like to scale down the coordinates [y/n]:")
-    
-    toScale = input()
-    scaledData = []
-    
-    if(toScale == "y" or toScale =="Y"):
-        print("\nBy what factor?")
-        scaleFactor = int(input())
-        
-        scaledData = scaleDown(shiftedData, scaleFactor)
-        
-        print("\nScaled Coordinates")
-        
-        newMaxX = 0
-        newMaxY = 0
-        newMaxZ = 0
-        #Redetermines the maximum dimensions of the future CC3D lattice based on the largest XYZ values found among the spheres.
-        #Output to default file for now:
-        outStream = open("AdjustOut.txt", "w")
-        for sphere in scaledData:
-            print(sphere)
-            outLine = str(sphere[0]) + " " + str(sphere[1]) + " " + str(sphere[2]) + " " + str(sphere[3]) + "\n"
-            outStream.write(outLine)
             
-            tempX = sphere[1] + sphere[0]
-            tempY = sphere[2] + sphere[0]
-            tempZ = sphere[3] + sphere[0]
+    print("\nFinal Coordinate data:")
+
+    #Output to default file for now:
+    outStream = open(fileOutput, "w")
+    for sphere in shiftedData:
+        print(sphere)
+        outLine = str(sphere[0]) + " " + str(sphere[1]) + " " + str(sphere[2]) + " " + str(sphere[3]) + "\n"
+        outStream.write(outLine)
         
-            if(tempX > newMaxX):
-                newMaxX = tempX
+        print("\nThe Lattice will likely need to be at least %d x %d x %d (X x Y x Z) in size." %(maxX, maxY, maxZ))
         
-            if(tempY > newMaxY):
-                newMaxY = tempY
-    
-            if(tempZ > newMaxZ):
-                newMaxZ = tempZ
-            
-        print("\nThe NEW Lattice will likely need to be at least %d x %d x %d (X x Y x Z) in size." %(newMaxX, newMaxY, newMaxZ))
-        
-        
-        outStream.close()
-    print("\n\nDONE!!!")
+    outStream.close()
+    print("\n\ninputAdjustment is done.")
 ###END OF main###
 
 #For a given line of sphere data passed into diagnose, function determines the coordinate shifts needed for the sphere in order
