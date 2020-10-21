@@ -32,31 +32,43 @@ from copy import deepcopy
 fileInput = "" #Name of input file.
 fileOutput = "" #Name of output file.
 
-'''Takes in console input to determine method of sphere data input (file vs console).'''
-def main():
+'''Takes in console input to determine method of sphere data input (file vs console).
+    alone is a boolean variable that is False when selecting the inputAdjustment + SphereGen
+    option in the master AVS script.'''
+def main(alone):
+    print("Now running Master\SphereGen_M.py")
+    
     #Connects the following fileOutput to the global fileOutput variable.
     global fileOutput
     
-    print("\n>>Enter OUTPUT file path and name:", end='')
+    print("\n>>Enter OUTPUT PIF file path and name:", end='')
     fileOutput = input()
     
-    #Asks if input will be from console or from file:
-    print ("\n>>Input method selection: \n\t[0 for file input]\n\t[1 for console input]", end='')
-    inputType = int(input())     
-    
-    #Takes in file as input. Can be used for multiple spheres.
-    if(inputType == 0):
-        useFile()
-    #Takes in manual input from console. Spheres are read in line by line.
-    elif(inputType == 1):
-        useConsole()
+    if(not alone):
+        useFile(alone)
+    else:
+        #Asks if input will be from console or from file:
+        print ("\n>>Input method selection: \n\t[0 for file input]\n\t[1 for console input]", end='')
+        inputType = int(input())     
+        
+        #Takes in file as input. Can be used for multiple spheres.
+        if(inputType == 0):
+            useFile(alone)
+        #Takes in manual input from console. Spheres are read in line by line.
+        elif(inputType == 1):
+            useConsole()
    
 ###END OF main FUNCTION###
         
 '''Handles reading sphere data from text file and converts it to CC3D PIFF coordinates.'''
-def useFile():
-    print("\n>>Enter INPUT file path and name:", end='')
-    fileInput = input()
+def useFile(alone):
+    #If the inputAdjustment + SphereGen_M option was selected in Master (alone == False),
+    #use the default input file sphereData.
+    if(not alone):
+        fileInput = "sphereData.txt"
+    else:
+        print("\n>>Enter INPUT file path and name:", end='')
+        fileInput = input()
     
     inStream = open(fileInput, "r")
     #List of all lines from the given input file.
@@ -161,7 +173,7 @@ def useConsole():
     #Begins the vacuole wall creation as a semi-hollowed out sphere.    
     if(wallData!="x"):
         buildWall(wallData, bodyNum)
-    print("\n\nDONE")
+    print("\n\nSphereGen_M is DONE.")
 ###END OF consoleSphere FUNCTION###
         
 '''Builds a hollow sphere around the set of regular spheres that represents a vacuole membrane wall.
@@ -254,5 +266,5 @@ def sphereToPif(grid, centerArray, radius, bodyCount):
     outStream.close()
 ###END OF sphereToPif FUNCTION###
 
-#Begins program.
-main()
+#This will automatically run this file if imported:
+#main()
