@@ -16,6 +16,7 @@ fileInput = "" #Name of input file.
 fileOutput = "sphereData.txt" #Name of output file.
 
 def main():    
+    print("Now running Master\inputAdjustment.py")
     
     print("\n>>Enter INPUT file path and name:", end='')
     fileInput = input()
@@ -103,10 +104,15 @@ def main():
         outLine = str(sphere[0]) + " " + str(sphere[1]) + " " + str(sphere[2]) + " " + str(sphere[3]) + "\n"
         outStream.write(outLine)
         
-        print("\nThe Lattice will likely need to be at least %d x %d x %d (X x Y x Z) in size." %(maxX, maxY, maxZ))
+    print("\nThe Lattice will likely need to be at least %d x %d x %d (X x Y x Z) in size." %(maxX, maxY, maxZ))
+    wallDiamter = (int(shiftedData[0][0]))*2
+    wallX = int(shiftedData[0][1])
+    print("Final Wall diameter = %d" %(wallDiamter))
+    print("Final Wall central X-coordinate = %d" %(wallX))
+        
         
     outStream.close()
-    print("\n\ninputAdjustment is done.")
+    print("\n\ninputAdjustment is DONE.")
 ###END OF main###
 
 #For a given line of sphere data passed into diagnose, function determines the coordinate shifts needed for the sphere in order
@@ -139,14 +145,15 @@ def scaleDown(moreData, factor):
     newData = []
 
     for line in moreData:
-        newRadius = int(line[0]/factor)
-        newX = int(line[1]/factor)
-        newY = int(line[2]/factor)
-        newZ = int(line[3]/factor)
+        newRadius = int(float(line[0])) / factor
+        newX = int(float(line[1])) / factor
+        newY = int(float(line[2])) / factor
+        newZ = int(float(line[3])) / factor
         
         newLine = [newRadius, newX, newY, newZ]
         newData.append(newLine)
 
     return(newData)
 ###END OF scaleDown###
-main()
+#This will automatically run this file if imported:
+#main()
