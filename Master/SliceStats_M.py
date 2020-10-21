@@ -31,15 +31,20 @@ import random
 
 #I realize it's unnecessary to have everything in this single function, but it'll be split up at some point.
 def main():
+    print("Now running Master\SliceStats_M.py")
+    
     inputName = ""
     outputName = ""
     print(">>Enter INPUT PIF file path+name:")
     inputName = input()
-    print("\n>>Enter OUTPUT file path+name:")
-    outputName = input()
+    
+    #print("\n>>Enter OUTPUT file path+name:")
+    #outputName = input()
+    #The master version of SliceStats will just use this predefined output file for easier use of this script.
+    outputName = "sliceData/sliceCoords.txt"
         
     #A secondary output file. Currently unused, but I have ideas for it.
-    sliceFile = "sliceData.txt"
+    #sliceFile = "sliceData.txt"
         
     #The known Diameter of the simulation's Wall sphere.
     print("\n>>Enter the given wall's diameter", end='')
@@ -125,7 +130,10 @@ def main():
     #A list of lists. Each sub-list contains all of the lines associated with a body.
     lineCollection = []
     index = 0
-        
+    
+    print("\nPIFF coordinates of the slice will be written to Master\sliceData\sliceCoords.txt")
+    print("\nSlice measurment data will be written to Master\sliceData\sliceDefault.txt")
+    
     '''The lines within bodyText are parsed through and sorted into the list of lists, lineCollection.
         As the lines within the given piff file can be out of order, as in all the lines for the bodies and wall
         can be mixed around and in a non-linear order, all the lines for each body, that fall within
@@ -219,10 +227,18 @@ def main():
                 if(maxArea >= minimumArea):
                     bodyAreas.append([currentBody, maxArea])
         index1 += 1
-        
+    
+    outStream2 = open("sliceData/sliceDefault.txt", "w")
+    
     print("[\"Body Number\", \"Max Area\"]:")
+    outStream2.write("[\"Body Number\", \"Max Area\"]:\n")
     for result in bodyAreas:
-            print(result)                    
-    print("\n\nDONE")
+        stringResult = "[%d, %d]" %(int(result[0]), result[1])
+        print(stringResult)
+        outStream2.write("%s\n" %(stringResult))
+        
+    outStream2.close()                    
+    print("\n\nSliceStats_M is DONE.")
 #Calls the function main to initate program.
-main()
+#This will automatically run this file if imported:
+#main()
