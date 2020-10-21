@@ -28,46 +28,53 @@ import SliceStats_M
 
 
 def main():
-    print("Please select from the following options by entering the corresponding number:")
-    print("[1]: inputAdjustment + SphereGen")
-    print("[2]: SliceStats")
-    print("[3]: inputAdjustment")
-    print("[4]: SphereGen")
-    print("[5] readme (coming soon)")
-    
-    scriptChoice = input()
-    
-    if(scriptChoice==1):
-        print()
-    elif(scriptChoice==2):
-        print()
-    elif(scriptChoice==3):
-        print()
-    elif(scriptChoice==4):
-        print()
-    elif(scriptChoice==5):
-        print()
-    else:
-        print("Invalid Input")
+    while(True):
+        print("Please select from the following options by entering the corresponding number:")
+        print("[1]: inputAdjustment + SphereGen")
+        print("[2]: SliceStats")
+        print("[3]: inputAdjustment")
+        print("[4]: SphereGen")
+        print("[5] readme (coming soon)")
+        print("[0] Exit AVS")
+        
+        scriptChoice = input()
+        
+        if(scriptChoice == "0"):
+            print("Now exiting AVS.")
+            #This simply exits the program. Equivalent to using sys.exit
+            raise SystemExit
+        elif(scriptChoice == "1"):
+            optionOne()
+        elif(scriptChoice == "2"):
+            optionTwo()
+        elif(scriptChoice == "3"):
+            optionThree()
+        elif(scriptChoice == "4"):
+            optionFour()
+        elif(scriptChoice == "5"):
+            optionFive()
+        else:
+            print("Invalid Input, please select from options 0~5")
 
 def optionOne():
-    print()
-    
+    print("Option One Selected")
+    inputAdjustment.main()
+    SphereGen_M.main(False)
     
 def optionTwo():
-    print()
-    
+    print("Option Two Selected")
+    SliceStats_M.main()
     
 def optionThree():
-    print()
-    
+    print("Option Three Selected")
+    inputAdjustment.main()
     
 def optionFour():
-    print()
-    
+    print("Option Four Selected")
+    SphereGen_M.main(True)
     
 def optionFive():
-    print()
-
+    print("Option Five Selected")
+    print("README is not yet available.")
 
 main()
