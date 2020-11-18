@@ -1,0 +1,55 @@
+<CompuCell3D Revision="20190604" Version="4.0.0">
+   
+   <Potts>
+      
+      <!-- Basic properties of CPM (GGH) algorithm -->
+      <Dimensions x="101" y="101" z="101"/>
+      <Steps>10000</Steps>
+      <Temperature>10.0</Temperature>
+      <Flip2DimRatio>1</Flip2DimRatio>
+      <NeighborOrder>3</NeighborOrder>
+   </Potts>
+   
+   <Plugin Name="CellType">
+      
+      <!-- Listing all cell types in the simulation -->
+      <CellType TypeId="0" TypeName="Medium"/>
+      <CellType TypeId="1" TypeName="Body"/>
+   </Plugin>
+   
+   <Plugin Name="VolumeTracker"/>
+   
+   <Plugin Name="Volume"/>
+   <!--<Plugin Name="Surface"/>-->
+
+   
+   <Plugin Name="Contact">
+      <!-- Specification of adhesion energies -->
+      <Energy Type1="Medium" Type2="Medium">6</Energy>
+      <Energy Type1="Medium" Type2="Body">6</Energy>
+      <Energy Type1="Body" Type2="Body">10</Energy>
+      <NeighborOrder>3</NeighborOrder>
+      <!--Example 1: MM=0; MB=15; BB=3; NO=4;-->
+   </Plugin>
+   
+   <Steppable Type="PIFInitializer">
+      
+      <!-- Initial layout of cells using PIFF file.
+      Piff files can be generated using PIFGEnerator -->
+      <PIFName>./Simulation/BodyPos.piff</PIFName>
+   </Steppable>
+   
+   <!--<Steppable Frequency="100" Type="PIFDumper">-->
+   
+   <!-- Periodically stores cell layout configuration in a piff format -->
+        <!--<PIFName>VoidBodies</PIFName>
+        <PIFFileExtension>piff</PIFFileExtension>
+   </Steppable>-->
+
+   
+   <!--<Steppable Type="PIFDumper" Frequency="100">
+            <PIFName>./Simulation/Blobby</PIFName>
+      <PIFFileExtension>piff</PIFFileExtension>
+   </Steppable>-->
+   
+</CompuCell3D>

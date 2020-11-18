@@ -1,0 +1,6 @@
+<Simulation version="4.0.0">
+   <XMLScript Type="XMLScript">Simulation/VoidBodies.xml</XMLScript>
+   <PythonScript Type="PythonScript">Simulation/VoidBodies.py</PythonScript>
+   <PIFFile Type="PIFFile">Simulation/BodyPos.piff</PIFFile>
+   <Resource Type="Python">Simulation/VoidBodiesSteppables.py</Resource>
+</Simulation>
