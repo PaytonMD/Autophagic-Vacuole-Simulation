@@ -228,16 +228,22 @@ def main():
                     bodyAreas.append([currentBody, maxArea])
         index1 += 1
     
-    outStream2 = open("sliceData/sliceDefault.txt", "w")
+    outStream2 = open("sliceData/sliceDefault.txt", "a+")
     
     print("[\"Body Number\", \"Max Area\"]:")
-    outStream2.write("[\"Body Number\", \"Max Area\"]:\n")
+    #outStream2.write("[\"Body Number\", \"Max Area\"]:\n")
+    # For easier data parsing I'll change body output to just the measured body area seperated by commas.
+    #Each data set will be seperated by a dashed line.
+    
     for result in bodyAreas:
-        stringResult = "[%d, %d]" %(int(result[0]), result[1])
-        print(stringResult)
-        outStream2.write("%s\n" %(stringResult))
-        
-    outStream2.close()                    
+        stringPrintResult = "[%d, %d]" %(int(result[0]), result[1])
+        print(stringPrintResult)
+
+        #outStream2.write("%s\n" %(stringResult))
+        outStream2.write("%d," %(result[1])) # Outputs each area value in the result array seperated by commas.
+    
+    outStream2.write("\n-\n")
+    outStream2.close()
     print("\n\nSliceStats_M is DONE.")
 #Calls the function main to initate program.
 #This will automatically run this file if imported:
