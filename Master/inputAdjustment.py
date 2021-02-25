@@ -15,6 +15,9 @@
 fileInput = "" #Name of input file.
 fileOutput = "sphereData.txt" #Name of output file.
 
+#lastScaleFactor is used to keep track of what scale factor was used last for other parts of the AVS pipeline.
+global lastScaleFactor
+
 def main():    
     print("Now running Master\inputAdjustment.py")
     
