@@ -251,16 +251,22 @@ def main():
     #getScaleFactor()
     
     print("SCALE FACTOR FOUND: %d" %(lastScaleFactor))
+    scaleFactor = lastScaleFactor
+    print("Would you like to select a different scaling factor?[y/n]")
+    userSelect = int(input())
+    if(userSelect=="y"):
+        print("Enter new scaling factor: ")
+        scaleFactor = int(input())
     
     #Check Initial Area Data and print:
     for result in bodyAreas:
             stringPrintResult = "[%d, %d]" %(int(result[0]), result[1])
             print(stringPrintResult)
     
-    if(lastScaleFactor!=0):
+    if(scaleFactor!=0):
         for result in bodyAreas:
             #stringPrintResult = "[%d, %d]" %(int(result[0]), result[1])
-            scaledResult = result[1] * lastScaleFactor
+            scaledResult = result[1] * scaleFactor
             reScaledAreas.append(scaledResult)
         
         for result in reScaledAreas:
