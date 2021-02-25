@@ -15,8 +15,8 @@
 fileInput = "" #Name of input file.
 fileOutput = "sphereData.txt" #Name of output file.
 
-#lastScaleFactor is used to keep track of what scale factor was used last for other parts of the AVS pipeline.
-global lastScaleFactor
+#scaleFactorFile is used to keep track of what scale factor was used last for other parts of the AVS pipeline.
+scaleFactorFile = "attributes/lastScaleFactor.txt"
 
 def main():    
     print("Now running Master\inputAdjustment.py")
@@ -56,9 +56,11 @@ def main():
         #scaleFactor here being an integer that will be used to divide the values of all the spheres.
         #A scaleFactor of 2 would cut the size of the spheres, and model, in half.
         scaleFactor = int(input())
+        lastScaleFactor = scaleFactor
         
         scaledData = scaleDown(ogData, scaleFactor)
-    
+    else:
+        lastScaleFactor = 0 #No scale factor was used.
     for sphere in scaledData:
         #The diagnose function determines how much the sphere data should be shifted based on an individual sphere's position and size.
         potentialChanges = diagnose(sphere)
@@ -116,6 +118,13 @@ def main():
         
     outStream.close()
     print("\n\ninputAdjustment is DONE.")
+    
+    #scaleFactor record keeping code:
+    factorStream = open(scaleFactorFile, "w")
+    #List of all lines from the given input file.
+    factorStream.write(lastScaleFactor)
+    factorStream.close()
+
 ###END OF main###
 
 #For a given line of sphere data passed into diagnose, function determines the coordinate shifts needed for the sphere in order

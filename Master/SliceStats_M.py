@@ -29,6 +29,19 @@ import random
 #   along with this program.  If not, see <https://www.gnu.org/licenses/>.
 ############################################################################################################
 
+scaleFactorFile = "attributes/lastScaleFactor.txt"
+
+def getScaleFactor():
+    inStream = open(scaleFactorFile, "r")
+    inStreamLine = inStream.readline()
+    lastUsedScaleFactor = inStreamLine.strip()
+    inStream.close()
+    
+    lastScaleFactor = int(lastUsedScaleFactor)
+    return lastScaleFactor
+
+lastScaleFactor = getScaleFactor()
+
 #I realize it's unnecessary to have everything in this single function, but it'll be split up at some point.
 def main():
     print("Now running Master\SliceStats_M.py")
@@ -234,14 +247,36 @@ def main():
     #outStream2.write("[\"Body Number\", \"Max Area\"]:\n")
     # For easier data parsing I'll change body output to just the measured body area seperated by commas.
     #Each data set will be seperated by a dashed line.
+    reScaledAreas = []
+    #getScaleFactor()
     
+    print("SCALE FACTOR FOUND: %d" %(lastScaleFactor))
+    
+    #Check Initial Area Data and print:
     for result in bodyAreas:
-        stringPrintResult = "[%d, %d]" %(int(result[0]), result[1])
-        print(stringPrintResult)
-
-        #outStream2.write("%s\n" %(stringResult))
-        outStream2.write("%d," %(result[1])) # Outputs each area value in the result array seperated by commas.
+            stringPrintResult = "[%d, %d]" %(int(result[0]), result[1])
+            print(stringPrintResult)
     
+    if(lastScaleFactor!=0):
+        for result in bodyAreas:
+            #stringPrintResult = "[%d, %d]" %(int(result[0]), result[1])
+            scaledResult = result[1] * lastScaleFactor
+            reScaledAreas.append(scaledResult)
+        
+        for result in reScaledAreas:
+            print("%d\n" %(result))
+    
+            #outStream2.write("%s\n" %(stringResult))
+            outStream2.write("%d," %(result)) # Outputs each area value in the result array seperated by commas.
+
+    else:
+        for result in bodyAreas:
+            stringPrintResult = "[%d, %d]" %(int(result[0]), result[1])
+            print(stringPrintResult)
+    
+            #outStream2.write("%s\n" %(stringResult))
+            outStream2.write("%d," %(result[1])) # Outputs each area value in the result array seperated by commas.
+        
     outStream2.write("\n-\n")
     outStream2.close()
     print("\n\nSliceStats_M is DONE.")

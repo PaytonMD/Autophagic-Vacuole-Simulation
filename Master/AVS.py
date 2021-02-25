@@ -26,6 +26,8 @@ import SliceStats_M
 #   along with this program.  If not, see <https://www.gnu.org/licenses/>.
 ############################################################################################################
 
+scaleFactorFile = "attributes/lastScaleFactor.txt"
+global lastScaleFactor
 
 def main():
     while(True):
@@ -76,5 +78,13 @@ def optionFour():
 def optionFive():
     print("Option Five Selected")
     print("README is not yet available.")
+    
+def getScaleFactor():
+    inStream = open(scaleFactorFile, "r")
+    inStreamLine = inStream.readline()
+    lastUsedScaleFactor = inStreamLine.strip()
+    inStream.close()
+    
+    lastScaleFactor = lastUsedScaleFactor
 
 main()
