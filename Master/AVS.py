@@ -3,6 +3,7 @@
 import inputAdjustment
 import SphereGen_M
 import SliceStats_M
+import Condenser_M
 
 ############################################################################################################
 #   Eastern Michigan University
@@ -37,6 +38,7 @@ def main():
         print("[3]: inputAdjustment")
         print("[4]: SphereGen")
         print("[5] readme (coming soon)")
+        print("[6] PIFF Condenser")
         print("[0] Exit AVS")
         
         scriptChoice = input()
@@ -55,6 +57,8 @@ def main():
             optionFour()
         elif(scriptChoice == "5"):
             optionFive()
+        elif(scriptChoice == "6"):
+            optionSix()
         else:
             print("Invalid Input, please select from options 0~5")
 
@@ -78,6 +82,10 @@ def optionFour():
 def optionFive():
     print("Option Five Selected")
     print("README is not yet available.")
+    
+def optionSix():
+    print("Option Six Selected")
+    Condenser_M.main()
     
 def getScaleFactor():
     inStream = open(scaleFactorFile, "r")
