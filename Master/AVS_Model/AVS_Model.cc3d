@@ -1,0 +1,6 @@
+<Simulation version="4.2.1">
+   <XMLScript Type="XMLScript">Simulation/AVS_Model.xml</XMLScript>
+   <PythonScript Type="PythonScript">Simulation/AVS_Model.py</PythonScript>
+   <PIFFile Type="PIFFile">Simulation/Model.piff</PIFFile>
+   <Resource Type="Python">Simulation/AVS_ModelSteppables.py</Resource>
+</Simulation>

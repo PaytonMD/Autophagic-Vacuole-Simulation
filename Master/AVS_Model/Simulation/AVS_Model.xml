@@ -1,0 +1,49 @@
+<CompuCell3D Revision="20200518" Version="4.2.1">
+   
+   <!--<Metadata>-->
+      <!-- Basic properties simulation -->
+      <!--<NumberOfProcessors>1</NumberOfProcessors>
+      <DebugOutputFrequency>10</DebugOutputFrequency>-->
+      <!-- <NonParallelModule Name="Potts"/> -->
+   <!--</Metadata>-->
+   
+   <Potts>
+      <!-- Basic properties of CPM (GGH) algorithm -->
+      <Dimensions x="251" y="251" z="251"/>
+      <Steps>1000</Steps>
+      <Temperature>25.0</Temperature>
+      <Flip2DimRatio>1</Flip2DimRatio>
+      <NeighborOrder>2</NeighborOrder>
+   </Potts>
+   
+   <Plugin Name="CellType">
+      <!-- Listing all cell types in the simulation -->
+      <CellType TypeId="0" TypeName="Medium"/>
+      <CellType TypeId="1" TypeName="Body"/>
+      <CellType Freeze="" TypeId="2" TypeName="Wall"/>
+   </Plugin>
+   
+   <Plugin Name="Volume"/>
+   
+   <Plugin Name="Contact">
+      <!-- Specification of adhesion energies -->
+      <Energy Type1="Medium" Type2="Medium">0.0</Energy>
+      <Energy Type1="Medium" Type2="Body">5.0</Energy>
+      <Energy Type1="Medium" Type2="Wall">0.0</Energy>
+      <Energy Type1="Body" Type2="Body">3.0</Energy>
+      <Energy Type1="Body" Type2="Wall">0.0</Energy>
+      <Energy Type1="Wall" Type2="Wall">0.0</Energy>
+      <NeighborOrder>2</NeighborOrder>
+   </Plugin>
+   
+   <Steppable Type="PIFInitializer">
+      <!-- Initial layout of cells using PIFF file. Piff files can be generated using PIFGEnerator -->
+      <PIFName>./Simulation/Model.piff</PIFName>
+   </Steppable>
+   
+   <!--<Steppable Frequency="100" Type="PIFDumper">-->
+      <!-- Periodically stores cell layout configuration in a piff format -->
+      <!--<PIFName>AVS_Model</PIFName>
+      <PIFFileExtension>piff</PIFFileExtension>-->
+   <!--</Steppable>-->
+</CompuCell3D>
