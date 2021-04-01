@@ -1,5 +1,4 @@
 # -*- coding: utf-8 -*-
-import math
 import sys
 import random
 
@@ -29,21 +28,8 @@ import random
 #   along with this program.  If not, see <https://www.gnu.org/licenses/>.
 ############################################################################################################
 
-scaleFactorFile = "attributes/lastScaleFactor.txt"
+#paramsFile is used to keep track of several variables used throughout the pipeline.
 paramsFile = "attributes/Model_Parameters.txt"
-
-def getScaleFactor():
-    inStream = open(scaleFactorFile, "r")
-    inStreamLine = inStream.readline()
-    lastUsedScaleFactor = inStreamLine.strip()
-    inStream.close()
-    if(lastUsedScaleFactor==''):
-        lastScaleFactor = 0
-    else:
-        lastScaleFactor = int(lastUsedScaleFactor)
-    return lastScaleFactor
-
-lastScaleFactor = getScaleFactor()
 
 #I realize it's unnecessary to have everything in this single function, but it'll be split up at some point.
 def main():

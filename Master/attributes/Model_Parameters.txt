@@ -1,3 +1,3 @@
-Scale_Factor: 5
-Wall_Diameter: 115
-Wall_X_Coordinate: 105
+Scale_Factor: 1
+Wall_Diameter: 200
+Wall_X_Coordinate: 110

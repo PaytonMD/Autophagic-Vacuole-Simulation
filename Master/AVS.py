@@ -3,13 +3,15 @@
 import inputAdjustment
 import SphereGen_M
 import SliceStats_M
+import AVSStats
 import Condenser_M
+#from rpy2.robjects import r
 
 ############################################################################################################
 #   Eastern Michigan University
 #   Backues Lab  
 #   Author: Payton Dunning
-#   Last Date Modified: October 13th, 2020
+#   Last Date Modified: MArch 31st, 2021
 #
 #   DESCRIPTION
 ############################################################################################################
@@ -27,19 +29,24 @@ import Condenser_M
 #   along with this program.  If not, see <https://www.gnu.org/licenses/>.
 ############################################################################################################
 
-scaleFactorFile = "attributes/lastScaleFactor.txt"
-global lastScaleFactor
+#paramsFile is used to keep track of several variables used throughout the pipeline.
+paramsFile = "attributes/Model_Parameters.txt"
 
 def main():
     while(True):
-        print("Please select from the following options by entering the corresponding number:")
-        print("[1]: inputAdjustment + SphereGen")
-        print("[2]: SliceStats")
-        print("[3]: inputAdjustment")
-        print("[4]: SphereGen")
-        print("[5] readme (coming soon)")
-        print("[6] PIFF Condenser")
-        print("[0] Exit AVS")
+        print(">>Please select from the following options by entering the corresponding number:")
+        print("[1]: Single AVS Pipeline Run (COMING SOON)")
+        print("[2]: Mass AVS Pipeline Runs (COMING SOON)")
+        print("[3]: Run GenBalls Alone (COMING SOON)")
+        print("[4]: Run inputAdjustment Alone")
+        print("[5]: Run SphereGen Alone")
+        print("[6]: Run CC3D Simulation Alone (COMING SOON)")
+        print("[7]: Run SliceStats Alone")
+        print("[8]: Run AVSStats Alone")
+        print("[9]: Run inputAdjustment + SphereGen")
+        print("[10]: Run Condenser Utility Script")
+        print("[11]: Read the readme file (COMING SOON)")
+        print("[0]: Exit AVS")
         
         scriptChoice = input()
         
@@ -59,40 +66,74 @@ def main():
             optionFive()
         elif(scriptChoice == "6"):
             optionSix()
+        elif(scriptChoice == "7"):
+            optionSeven()
+        elif(scriptChoice == "8"):
+            optionEight()
+        elif(scriptChoice == "9"):
+            optionNine()
+        elif(scriptChoice == "10"):
+            optionTen()
+        elif(scriptChoice == "11"):
+            optionEleven()
         else:
-            print("Invalid Input, please select from options 0~5")
+            print("Invalid Input, please select from options 0~11")
 
+#[1] Single AVS Pipeline Run (COMING SOON)
 def optionOne():
     print("Option One Selected")
-    inputAdjustment.main()
-    SphereGen_M.main(False)
+    print("\tCOMING SOON! Please choose another option.")
     
+#[2] Mass AVS Pipeline Runs (COMING SOON)
 def optionTwo():
     print("Option Two Selected")
-    SliceStats_M.main()
-    
+    print("\tCOMING SOON! Please choose another option.")
+
+#[3] Run GenBalls Alone (COMING SOON)
 def optionThree():
     print("Option Three Selected")
-    inputAdjustment.main()
-    
+    print("\tCOMING SOON! Please choose another option.")
+
+#[4]: Run inputAdjustment Alone
 def optionFour():
     print("Option Four Selected")
-    SphereGen_M.main(True)
+    inputAdjustment.main()
     
+    
+#[5]: Run SphereGen Alone
 def optionFive():
     print("Option Five Selected")
-    print("README is not yet available.")
+    SphereGen_M.main(True)
     
+#[6]: Run CC3D Simulation Alone (COMING SOON)
 def optionSix():
     print("Option Six Selected")
+    print("\tCOMING SOON! Please choose another option.")
+    
+#[7]: Run SliceStats Alone
+def optionSeven():
+    print("Option Seven Selected")
+    SliceStats_M.main()
+    
+#[8] Run AVSStats Alone
+def optionEight():
+    print("Option Eight Selected")
+    AVSStats.main()
+ 
+#[9]: Run inputAdjustment + SphereGen
+def optionNine():
+    print("Option Nine Selected")
+    inputAdjustment.main()
+    SphereGen_M.main(False)
+
+#[10] Run Condenser Utility Script
+def optionTen():
+    print("Option Ten Selected")
     Condenser_M.main()
-    
-def getScaleFactor():
-    inStream = open(scaleFactorFile, "r")
-    inStreamLine = inStream.readline()
-    lastUsedScaleFactor = inStreamLine.strip()
-    inStream.close()
-    
-    lastScaleFactor = lastUsedScaleFactor
+
+#[11] Read the readme file (COMING SOON)
+def optionEleven():
+    print("Option Eleven Selected")
+    print("README is not yet available. Sorry :( ")
 
 main()

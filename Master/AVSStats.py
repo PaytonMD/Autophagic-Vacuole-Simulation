@@ -8,7 +8,7 @@ from statsmodels.graphics.gofplots import qqplot_2samples
 #   Eastern Michigan University
 #   Backues Lab  
 #   Author: Payton Dunning
-#   Last Date Modified: February 3rd, 2021
+#   Last Date Modified: March 31st, 2021
 #
 #   DESCRIPTION
 ############################################################################################################
@@ -48,10 +48,10 @@ def main():
     
 def findAverage():
     print("Select an option for file input:")
-    print("[0]: Use default input file '../Master/sliceData/sliceDefault.txt'")
+    print("[0]: Use default input file '../sliceData/sliceDefault.txt'")
     print("[1]: Use alternate input file.")
     userSelection = input()
-    inputFile = "Master/sliceData/sliceDefault.txt"
+    inputFile = "sliceData/sliceDefault.txt"
     
     if(userSelection == "1"):
         print("Please enter alternate input file: ")
@@ -102,11 +102,11 @@ def findAverage():
 def qqPlot():
     print("\nQQ")
     print("Select an option for file input:")
-    print("[0]: Use default input file '../Master/sliceData/sliceDefault.txt'")
+    print("[0]: Use default input file '../sliceData/sliceDefault.txt'")
     print("[1]: Use alternate input file.")
     
     userSelection = input()
-    inputFile = "Master/sliceData/sliceDefault.txt"
+    inputFile = "sliceData/sliceDefault.txt"
     
     if(userSelection == "1"):
         print("Please enter alternate input file: ")
@@ -149,10 +149,10 @@ def ksTest():
 
 def violinPlot():
     print("Select an option for file input:")
-    print("[0]: Use default input file '../Master/sliceData/sliceDefault.txt'")
+    print("[0]: Use default input file '../sliceData/sliceDefault.txt'")
     print("[1]: Use alternate input file.")
     userSelection = input()
-    inputFile = "Master/sliceData/sliceDefault.txt"
+    inputFile = "sliceData/sliceDefault.txt"
     
     if(userSelection == "1"):
         print("Please enter alternate input file: ")
@@ -189,4 +189,4 @@ def violinPlot():
     
     ax.set_xlabel("Data Sets")
     ax.set_ylabel("Body Area (units)")
-main()
+#main()
