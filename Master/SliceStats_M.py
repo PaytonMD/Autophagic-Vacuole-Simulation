@@ -36,8 +36,10 @@ def getScaleFactor():
     inStreamLine = inStream.readline()
     lastUsedScaleFactor = inStreamLine.strip()
     inStream.close()
-    
-    lastScaleFactor = int(lastUsedScaleFactor)
+    if(lastUsedScaleFactor==''):
+        lastScaleFactor = 0
+    else:
+        lastScaleFactor = int(lastUsedScaleFactor)
     return lastScaleFactor
 
 lastScaleFactor = getScaleFactor()
@@ -253,7 +255,7 @@ def main():
     print("SCALE FACTOR FOUND: %d" %(lastScaleFactor))
     scaleFactor = lastScaleFactor
     print("Would you like to select a different scaling factor?[y/n]")
-    userSelect = int(input())
+    userSelect = (input()
     if(userSelect=="y"):
         print("Enter new scaling factor: ")
         scaleFactor = int(input())
