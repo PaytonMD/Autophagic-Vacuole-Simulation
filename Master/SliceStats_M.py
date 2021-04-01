@@ -65,6 +65,7 @@ def main():
     
     if(paramSelect == "n"):
         print("Please enter new values for parameters:\n")
+        print("Wall diameter and minimum diameter threshold parameter values should be post-scaling values.")
         
         print("\n>>Enter new scaling factor: ")
         scaleFactor = int(input())
