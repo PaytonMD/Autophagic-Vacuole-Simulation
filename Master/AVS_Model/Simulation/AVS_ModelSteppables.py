@@ -45,6 +45,8 @@ class AVS_ModelSteppable(SteppableBasePy):
         """
         Finish Function is called after the last MCS
         """
-
-
+        #CC3D Return code.
+        #Associated with python code that calls CC3D:
+        pg = ComuCellSetup.persistent_globals
+        pg.return_object = 25.0
         
