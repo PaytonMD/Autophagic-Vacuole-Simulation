@@ -172,7 +172,7 @@ def updateParams(factor, wallDiam, wallX):
     paramsStream = open(paramsFile, "w")
     paramsStream.write("Scale_Factor: %d\n" %(factor))
     paramsStream.write("Wall_Diameter: %d\n" %(wallDiam))
-    paramsStream.write("Wall_C_Coordinate: %d\n" %(wallX))
+    paramsStream.write("Wall_X_Coordinate: %d\n" %(wallX))
     
     paramsStream.close()
     
