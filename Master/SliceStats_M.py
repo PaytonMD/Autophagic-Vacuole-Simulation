@@ -7,7 +7,7 @@ import random
 #   Eastern Michigan University
 #   Backues Lab  
 #   Author: Payton Dunning
-#   Last Date Modified: October 13th, 2020
+#   Last Date Modified: March 31st, 2021
 #
 #   A script for analyzing the contents of an Autophagic Vacuole Simulation (AVS) project formatted 
 #   Compucell 3D (CC3D) simulation. The script takes in a PIF file (.piff), that must contain "Body" and
@@ -30,6 +30,7 @@ import random
 ############################################################################################################
 
 scaleFactorFile = "attributes/lastScaleFactor.txt"
+paramsFile = "attributes/Model_Parameters.txt"
 
 def getScaleFactor():
     inStream = open(scaleFactorFile, "r")
@@ -60,14 +61,35 @@ def main():
         
     #A secondary output file. Currently unused, but I have ideas for it.
     #sliceFile = "sliceData.txt"
-        
-    #The known Diameter of the simulation's Wall sphere.
-    print("\n>>Enter the given wall's diameter", end='')
-    wallD = int(input())
     
-    #The X value representing the X-coordinate of the Wall sphere's center.
-    print("\n>>Enter the given wall's central x-coordinate:", end='')
-    centerX = int(input()) 
+    print("Grabbing AVS Model Parameters...\n")
+    modelParams = grabParams()
+    scaleFactor = modelParams[0]
+    wallD = modelParams[1]
+    centerX = modelParams[2]
+    
+    
+    print("Current Model Parameters:\n")
+    print("\tScale_Factor: %d\n" %(scaleFactor))
+    print("\tWall_Diameter: %d\n" %(wallD))
+    print("\tWall_C_Coordinate: %d\n" %(centerX))
+    
+    print("Would you like to use these parameters?[y/n]")
+    paramSelect = input()
+    
+    if(paramSelect == "n"):
+        print("Please enter new values for parameters:\n")
+        
+        print("\n>>Enter new scaling factor: ")
+        scaleFactor = int(input())
+        
+        #The known Diameter of the simulation's Wall sphere.
+        print("\n>>Enter the given wall's diameter", end='')
+        wallD = int(input())
+        
+        #The X value representing the X-coordinate of the Wall sphere's center.
+        print("\n>>Enter the given wall's central x-coordinate:", end='')
+        centerX = int(input()) 
     
     #The minimum Diameter needed to perform the slice and analyze the body areas.
     #Essentially used as a threshold to remove outliers prior to analysis.
@@ -246,26 +268,18 @@ def main():
     outStream2 = open("sliceData/sliceDefault.txt", "a+")
     
     print("[\"Body Number\", \"Max Area\"]:")
-    #outStream2.write("[\"Body Number\", \"Max Area\"]:\n")
+
     # For easier data parsing I'll change body output to just the measured body area seperated by commas.
     #Each data set will be seperated by a dashed line.
     reScaledAreas = []
-    #getScaleFactor()
-    
-    print("SCALE FACTOR FOUND: %d" %(lastScaleFactor))
-    scaleFactor = lastScaleFactor
-    print("Would you like to select a different scaling factor?[y/n]")
-    userSelect = (input()
-    if(userSelect=="y"):
-        print("Enter new scaling factor: ")
-        scaleFactor = int(input())
     
     #Check Initial Area Data and print:
     for result in bodyAreas:
-            stringPrintResult = "[%d, %d]" %(int(result[0]), result[1])
-            print(stringPrintResult)
+        print("\nUnmodified Body Data:")
+        stringPrintResult = "[%d, %d]" %(int(result[0]), result[1])
+        print(stringPrintResult)
     
-    if(scaleFactor!=0):
+    if(scaleFactor!=1):
         for result in bodyAreas:
             #stringPrintResult = "[%d, %d]" %(int(result[0]), result[1])
             scaledResult = result[1] * scaleFactor
@@ -273,21 +287,29 @@ def main():
         
         for result in reScaledAreas:
             print("%d\n" %(result))
-    
-            #outStream2.write("%s\n" %(stringResult))
             outStream2.write("%d," %(result)) # Outputs each area value in the result array seperated by commas.
 
     else:
         for result in bodyAreas:
             stringPrintResult = "[%d, %d]" %(int(result[0]), result[1])
             print(stringPrintResult)
-    
-            #outStream2.write("%s\n" %(stringResult))
             outStream2.write("%d," %(result[1])) # Outputs each area value in the result array seperated by commas.
         
     outStream2.write("\n-\n")
     outStream2.close()
     print("\n\nSliceStats_M is DONE.")
 #Calls the function main to initate program.
+
+def grabParams():
+    params = []
+    paramsInStream = open(paramsFile, "r")
+    inStreamLines = paramsInStream.readlines()
+    paramsInStream.close()
+    
+    for line in inStreamLines:
+        splitLine = line.split()
+        params.append(int(splitLine[1].strip()))
+        
+    return params
 #This will automatically run this file if imported:
 #main()
