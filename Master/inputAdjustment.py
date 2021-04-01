@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 #   Author: Payton Dunning
-#   Last Date Modified: October 13th, 2020
+#   Last Date Modified: March 31st, 2021
 #
 #   Complimentary code for SphereGen.py. Takes in spherical data and makes 2 types of adjustments in order
 #   for the data to be compatible with SphereGen.py, CompuCell 3D, and other AVS project programs.
@@ -9,7 +9,7 @@
 #   lattice is set to). CompuCell 3D's default conditions are not compliant with negative coordinates.
 #
 #   The second adjustment is an optional scaling of the spherical data. If the data is deemed too large the user can specify some
-#   scale to shrink the spheres down by. For instance, a given scale down of 2 would divide all of the radii and sphere center
+#   scale to shrink the spheres down by. For instance, a given scale down of 2 would divide all of the diameters and sphere center
 #   coordinates by 2. Other adjustments to the data may be added in time.
 
 fileInput = "" #Name of input file.
@@ -17,6 +17,7 @@ fileOutput = "sphereData.txt" #Name of output file.
 
 #scaleFactorFile is used to keep track of what scale factor was used last for other parts of the AVS pipeline.
 scaleFactorFile = "attributes/lastScaleFactor.txt"
+paramsFile = "attributes/Model_Parameters.txt"
 
 def main():    
     print("Now running Master\inputAdjustment.py")
@@ -26,7 +27,7 @@ def main():
     
     print("\nAll output will be written to 'sphereData.txt'")
     
-    #Read in all data from input file and store in Data
+    #Read in all data from input file and store in ogData
     ogData = [] #og as in original
     
     inStream = open(fileInput, "r")
@@ -60,7 +61,7 @@ def main():
         
         scaledData = scaleDown(ogData, scaleFactor)
     else:
-        lastScaleFactor = 0 #No scale factor was used.
+        lastScaleFactor = 1 #No scale factor was used.
     for sphere in scaledData:
         #The diagnose function determines how much the sphere data should be shifted based on an individual sphere's position and size.
         potentialChanges = diagnose(sphere)
@@ -86,9 +87,10 @@ def main():
     #Prints the newly modified sphere data and determines actual values for maxX, maxY, and maxZ.
     for sphere in shiftedData:
         print(sphere)
-        tempX = sphere[1] + sphere[0]
-        tempY = sphere[2] + sphere[0]
-        tempZ = sphere[3] + sphere[0]
+        #The temp values use the sphere's radius, so the diameter, sphere[0] must be halved.
+        tempX = sphere[1] + (sphere[0] / 2)
+        tempY = sphere[2] + (sphere[0] / 2)
+        tempZ = sphere[3] + (sphere[0] / 2)
         
         if(tempX > maxX):
             maxX = tempX
@@ -110,29 +112,26 @@ def main():
         outStream.write(outLine)
         
     print("\nThe Lattice will likely need to be at least %d x %d x %d (X x Y x Z) in size." %(maxX, maxY, maxZ))
-    wallDiamter = (int(shiftedData[0][0]))*2
-    wallX = int(shiftedData[0][1])
-    print("Final Wall diameter = %d" %(wallDiamter))
-    print("Final Wall central X-coordinate = %d" %(wallX))
+    wallDiameter = int(shiftedData[0][0])
+    wallXCoord = int(shiftedData[0][1])
+    print("Final Wall diameter = %d" %(wallDiameter))
+    print("Final Wall central X-coordinate = %d" %(wallXCoord))
         
         
     outStream.close()
     print("\n\ninputAdjustment is DONE.")
     
-    #scaleFactor record keeping code:
-    factorStream = open(scaleFactorFile, "w")
-    #List of all lines from the given input file.
-    factorStream.write(lastScaleFactor)
-    factorStream.close()
+    #Model Parameters Update:
+    updateParams(scaleFactor, wallDiameter, wallXCoord)
 
 ###END OF main###
 
 #For a given line of sphere data passed into diagnose, function determines the coordinate shifts needed for the sphere in order
 #to produce the sphere entirely in the 1st quandrant (no negative coordinates in any dimension).
 def diagnose(lineData):
-    xChange = ((int(float(lineData[1])) - int(float(lineData[0]))) * -1) + 5
-    yChange = ((int(float(lineData[2])) - int(float(lineData[0]))) * -1) + 5
-    zChange = ((int(float(lineData[3])) - int(float(lineData[0]))) * -1) + 5
+    xChange = ((int(float(lineData[1])) - (int(float(lineData[0]))) / 2) * -1) + 5
+    yChange = ((int(float(lineData[2])) - (int(float(lineData[0]))) / 2) * -1) + 5
+    zChange = ((int(float(lineData[3])) - (int(float(lineData[0]))) / 2) * -1) + 5
     changes = [xChange, yChange, zChange]
     return(changes)
 ###END OF diagnose###
@@ -157,15 +156,25 @@ def scaleDown(moreData, factor):
     newData = []
 
     for line in moreData:
-        newRadius = int(float(line[0])) / factor
+        newDiameter = (int(float(line[0]))) / factor
         newX = int(float(line[1])) / factor
         newY = int(float(line[2])) / factor
         newZ = int(float(line[3])) / factor
         
-        newLine = [newRadius, newX, newY, newZ]
+        newLine = [newDiameter, newX, newY, newZ]
         newData.append(newLine)
 
     return(newData)
 ###END OF scaleDown###
+
+def updateParams(factor, wallDiam, wallX):
+    print("\nUpdating AVS Model Parameters...\n")
+    paramsStream = open(paramsFile, "w")
+    paramsStream.write("Scale_Factor: %d\n" %(factor))
+    paramsStream.write("Wall_Diameter: %d\n" %(wallDiam))
+    paramsStream.write("Wall_C_Coordinate: %d\n" %(wallX))
+    
+    paramsStream.close()
+    
 #This will automatically run this file if imported:
 #main()
