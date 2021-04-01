@@ -7,7 +7,7 @@ from copy import deepcopy
 #   Eastern Michigan University
 #   Backues Lab  
 #   Author: Payton Dunning
-#   Last Date Modified: October 13th, 2020
+#   Last Date Modified: March 31st, 2021
 #
 #   Reads in numerical data representing spheres and outputs a CC3D compatible PIF file representing the
 #   various spheres. Sphere data is read in as lines from either a text file or typped into the console.
@@ -96,13 +96,9 @@ def useFile(alone):
             sphereData = line.split()
             print("Body #%d: %s %s %s %s" %(bodyNum, sphereData[0], sphereData[1], sphereData[2], sphereData[3]))
             #tVolume = float(sphereData[0]) #Target Volume
-            radii = int(sphereData[0])
+            dim = int(sphereData[0]) + 1 # The +1 might not be necessary. Other diameter variables may not have the +1.
+            radii = (int(sphereData[0]) / 2)
             centerPoint = [float(sphereData[1]), float(sphereData[2]), float(sphereData[3])]
-            #Dimensions of numpy array.
-            dim = (radii*2)+1
-            
-            #radii = findRadii(tVolume)
-            #print("Radii for body #" + str(bodyNum) + " = " + str(int(radii)) + "\n")
             
             #numpy arrays are a specialized array type.
             starterGrid = np.zeros((dim, dim, dim)) # Builds the 3D numpy array.
@@ -157,9 +153,10 @@ def useConsole():
         sphereData = sphere.split()
         print("Body #%d: %s %s %s %s" %(bodyNum, sphereData[0], sphereData[1], sphereData[2], sphereData[3]))
         centerPoint = [float(sphereData[1]), float(sphereData[2]), float(sphereData[3])]
-        radius = int(sphereData[0])
-
-        dim = (radius*2)+1
+        #radius = int(sphereData[0])
+        dim = int(sphereData[0])
+        radius = dim / 2
+        #dim = (radius*2)+1
         
         starterGrid = np.zeros((dim, dim, dim)) # Builds the numpy array.
         sphereGrid = deepcopy(starterGrid) #Copy of the starterGrid.
@@ -183,7 +180,7 @@ def buildWall(wallData, bodyCount):
     #print("\nWall Data: %s" %(wallData))
     sphereData = wallData.split()
     print("Wall: %s %s %s %s" %(sphereData[0], sphereData[1], sphereData[2], sphereData[3]))
-    radii = int(sphereData[0])
+    radii = (int(sphereData[0]) / 2)
     xCenter = int(sphereData[1])
     yCenter = int(sphereData[2])
     zCenter = int(sphereData[3])
@@ -193,7 +190,7 @@ def buildWall(wallData, bodyCount):
     outStream = open(fileOutput, "a")
 
     '''The -1s and +3s here extend the range of pixels that count as being on the surface of the wall sphere.
-        Without this extension, the wall may be exceedingly thing in certain spots, and depending on its
+        Without this extension, the wall may be exceedingly thin in certain spots, and depending on its
         overall size, there may be holes or gaps. This extension and the exact numbers used may not be
         optimal and may be adjusted in the future.'''
     for x in range( int((xCenter-radii)-1), int(xCenter+radii+3) ):
