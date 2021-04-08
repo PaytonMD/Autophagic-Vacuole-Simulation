@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 import sys
 import random
+import math
 
 ############################################################################################################
 #   Eastern Michigan University
@@ -83,18 +84,27 @@ def main():
     wallD = (wallRadius*2)
     #The minimum Diameter needed to perform the slice and analyze the body areas.
     #Essentially used as a threshold to remove outliers prior to analysis.
-    print("\n>>Enter the minimum diameter threshold:", end='')
-    minDiam = int(input())
+    #Unscalled default is a 300nm minimum radius, or 600nm minimum diameter.
+    unScalledMinD = 600
+    minDiam = (unScalledMinD / scaleFactor)
+    print("Default minimum diameter threshold = %dunits" %(minDiam))
+    
+    print("Would you like to use this default minimum threshold?[y/n]")
+    minDInput = input()
+    
+    if(minDInput == "n"):
+        print("\n>>Enter new minimum diameter threshold (scalled): ")
+        minDiam = int(input())
     
     #Useable range of x-coordinates for the main slice.
-    xRange = wallD - minDiam
+    diamRangeVar = int((wallD - minDiam) / 2)
         
-    if(xRange <= 0):
+    if(diamRangeVar <= 0):
         sys.exit("\n!!!This model does not support a minimum diameter threshold of %s" %(minDiam))
         
     #The starting and ending X-coordinates viable for a slice to be taken at.
-    minX = centerX-int(xRange/2)
-    maxX = centerX+int(xRange/2)
+    minX = centerX - diamRangeVar
+    maxX = centerX + diamRangeVar
     
     
     print(">>Finally, select an option for determining where a slice will be taken:")
@@ -212,8 +222,13 @@ def main():
     
     #An array of arrays. Each sub array contains 2 things: "Body Num", "Max Area" for that body.
     bodyAreas = []
-    #The minimum area threshold for the sub-slices of the bodies.
-    minimumArea = 25
+    #The minimum area threshold for the sub-slices of the bodies. This is based on a 50nm limit
+    #for body radius givin by Dr.Backues. This translates to a minimum area of ~7854.
+    #Area of circle = pi * r^2
+    minBodyRadius = (50 / scaleFactor)
+    minBodyArea = math.pi * (minBodyRadius**2)
+    print("Current minimum body threshold = %d" %(minBodyArea))
+    
     index1 = 0
     #The outer for loop iterates through each body.
     for array in lineCollection:
@@ -251,7 +266,7 @@ def main():
                 if(currentArea > maxArea):
                     maxArea = currentArea
 
-                if(maxArea >= minimumArea):
+                if(maxArea >= minBodyArea):
                     bodyAreas.append([currentBody, maxArea])
         index1 += 1
     
