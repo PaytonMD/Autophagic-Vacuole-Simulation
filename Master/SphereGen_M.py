@@ -96,8 +96,10 @@ def useFile(alone):
             sphereData = line.split()
             print("Body #%d: %s %s %s %s" %(bodyNum, sphereData[0], sphereData[1], sphereData[2], sphereData[3]))
             #tVolume = float(sphereData[0]) #Target Volume
-            dim = int(sphereData[0]) + 1 # The +1 might not be necessary. Other diameter variables may not have the +1.
-            radii = (int(sphereData[0]) / 2)
+            radii = int(sphereData[0])
+            dim = (radii*2)+1
+            #dim = int(sphereData[0]) + 1 # The +1 might not be necessary. Other diameter variables may not have the +1.
+            #radii = (int(sphereData[0]) / 2)
             centerPoint = [float(sphereData[1]), float(sphereData[2]), float(sphereData[3])]
             
             #numpy arrays are a specialized array type.
@@ -153,10 +155,8 @@ def useConsole():
         sphereData = sphere.split()
         print("Body #%d: %s %s %s %s" %(bodyNum, sphereData[0], sphereData[1], sphereData[2], sphereData[3]))
         centerPoint = [float(sphereData[1]), float(sphereData[2]), float(sphereData[3])]
-        #radius = int(sphereData[0])
-        dim = int(sphereData[0])
-        radius = dim / 2
-        #dim = (radius*2)+1
+        radius = int(sphereData[0])
+        dim = (radius*2)+1
         
         starterGrid = np.zeros((dim, dim, dim)) # Builds the numpy array.
         sphereGrid = deepcopy(starterGrid) #Copy of the starterGrid.
@@ -180,12 +180,11 @@ def buildWall(wallData, bodyCount):
     #print("\nWall Data: %s" %(wallData))
     sphereData = wallData.split()
     print("Wall: %s %s %s %s" %(sphereData[0], sphereData[1], sphereData[2], sphereData[3]))
-    radii = (int(sphereData[0]) / 2)
+    radii = int(sphereData[0])
     xCenter = int(sphereData[1])
     yCenter = int(sphereData[2])
     zCenter = int(sphereData[3])
         
-    #wallRadius = findRadii(volume)
     
     outStream = open(fileOutput, "a")
 
@@ -221,16 +220,6 @@ def setUpGrid(grid, radius):
                     grid[x,y,z] = 1
     return grid
 ###END OF setUpGrid FUNCTION###
-
-'''Given the volume of a sphere, finds the radii of the smallest sphere
-    larger than the given sphere that uses an integer radii. Integers are
-    used for radii and volumes because CC3D doesn't deal with decimals or
-    partial pixels. Currently unused in version 1.2'''
-def findRadii(givenVolume):
-    calcRadii = math.pow( ((givenVolume/(math.pi))*(3.0/4.0)), (1/3))
-    #^calcRadii is the actual, double value of the given sphere's radii. (I.E. it can be 12.163371 etc.)
-    return calcRadii        
-###END OF findRadii FUNCTION###
 
 '''Traverses through the given numpy array (grid), and writes the coordinates
     of any found 1s to the given output file, fileOutput, in PIF format for use in CC3D.'''

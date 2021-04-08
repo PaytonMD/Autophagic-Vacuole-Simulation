@@ -5,7 +5,7 @@ class AVS_ModelSteppable(SteppableBasePy):
 
     def __init__(self,frequency=1):
 
-        Steppab-leBasePy.__init__(self,frequency)
+        SteppableBasePy.__init__(self,frequency)
 
     def start(self):
         """
@@ -17,7 +17,7 @@ class AVS_ModelSteppable(SteppableBasePy):
             cell.lambdaVolume = 5.0
             
         #Sets up plot of Total Model Energy changes over time(Steps).
-        self.plot_win1 = self.add_new_plot_window(
+        '''self.plot_win1 = self.add_new_plot_window(
             title='Total Energy of Model',
             x_axis_title='Monte Carlo Step (MCS)',
             y_axis_title='Total Energy',
@@ -25,7 +25,7 @@ class AVS_ModelSteppable(SteppableBasePy):
             y_scale_type='linear',
             grid=True)
             
-        self.plot_win1.add_plot("totalEnergy", style='Dots', color='red', size=5)
+        self.plot_win1.add_plot("totalEnergy", style='Dots', color='red', size=5)'''
 
     def step(self,mcs):
         """
@@ -37,9 +37,9 @@ class AVS_ModelSteppable(SteppableBasePy):
             print("cell.id=",cell.id)
         
         #Updates Total Energy graph with this steps current total energy.
-        totEnergy = self.potts.getEnergy()
-        print("Total Energy = %s" %(totEnergy))
-        self.plot_win1.add_data_point('totalEnergy', mcs, totEnergy)
+        #totEnergy = self.potts.getEnergy()
+        #print("Total Energy = %s" %(totEnergy))
+        #self.plot_win1.add_data_point('totalEnergy', mcs, totEnergy)
 
     def finish(self):
         """
@@ -47,6 +47,6 @@ class AVS_ModelSteppable(SteppableBasePy):
         """
         #CC3D Return code.
         #Associated with python code that calls CC3D:
-        pg = ComuCellSetup.persistent_globals
-        pg.return_object = 25.0
+        #pg = CompuCellSetup.persistent_globals
+        #pg.return_object = 25.0
         

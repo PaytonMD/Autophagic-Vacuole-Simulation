@@ -10,7 +10,7 @@
 #
 #   The second adjustment is an optional scaling of the spherical data. If the data is deemed too large the user can specify some
 #   scale to shrink the spheres down by. For instance, a given scale down of 2 would divide all of the diameters and sphere center
-#   coordinates by 2. Other adjustments to the data may be added in time.
+#   coordinates by 2. Other adjustments to the data may be added in time. Uses first number as sphere RADIUS.
 
 fileInput = "" #Name of input file.
 fileOutput = "sphereData.txt" #Name of output file.
@@ -86,10 +86,10 @@ def main():
     #Prints the newly modified sphere data and determines actual values for maxX, maxY, and maxZ.
     for sphere in shiftedData:
         print(sphere)
-        #The temp values use the sphere's radius, so the diameter, sphere[0] must be halved.
-        tempX = sphere[1] + (sphere[0] / 2)
-        tempY = sphere[2] + (sphere[0] / 2)
-        tempZ = sphere[3] + (sphere[0] / 2)
+        #The temp values use the sphere's radius, sphere[0].
+        tempX = sphere[1] + sphere[0]
+        tempY = sphere[2] + sphere[0]
+        tempZ = sphere[3] + sphere[0]
         
         if(tempX > maxX):
             maxX = tempX
@@ -111,9 +111,9 @@ def main():
         outStream.write(outLine)
         
     print("\nThe Lattice will likely need to be at least %d x %d x %d (X x Y x Z) in size." %(maxX, maxY, maxZ))
-    wallDiameter = int(shiftedData[0][0])
+    wallRadius = int(shiftedData[0][0])
     wallXCoord = int(shiftedData[0][1])
-    print("Final Wall diameter = %d" %(wallDiameter))
+    print("Final Wall radius = %d" %(wallRadius))
     print("Final Wall central X-coordinate = %d" %(wallXCoord))
         
         
@@ -121,16 +121,16 @@ def main():
     print("\n\ninputAdjustment is DONE.")
     
     #Model Parameters Update:
-    updateParams(scaleFactor, wallDiameter, wallXCoord)
+    updateParams(scaleFactor, wallRadius, wallXCoord)
 
 ###END OF main###
 
 #For a given line of sphere data passed into diagnose, function determines the coordinate shifts needed for the sphere in order
 #to produce the sphere entirely in the 1st quandrant (no negative coordinates in any dimension).
 def diagnose(lineData):
-    xChange = ((int(float(lineData[1])) - (int(float(lineData[0]))) / 2) * -1) + 5
-    yChange = ((int(float(lineData[2])) - (int(float(lineData[0]))) / 2) * -1) + 5
-    zChange = ((int(float(lineData[3])) - (int(float(lineData[0]))) / 2) * -1) + 5
+    xChange = ((int(float(lineData[1])) - int(float(lineData[0]))) * -1) + 5
+    yChange = ((int(float(lineData[2])) - int(float(lineData[0]))) * -1) + 5
+    zChange = ((int(float(lineData[3])) - int(float(lineData[0]))) * -1) + 5
     changes = [xChange, yChange, zChange]
     return(changes)
 ###END OF diagnose###

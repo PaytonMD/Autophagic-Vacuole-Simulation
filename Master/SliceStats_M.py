@@ -51,13 +51,15 @@ def main():
     print("Grabbing AVS Model Parameters...\n")
     modelParams = grabParams()
     scaleFactor = modelParams[0]
-    wallD = modelParams[1]
+    #wallD = modelParams[1]
+    wallRadius = modelParams[1]
     centerX = modelParams[2]
     
     
     print("Current Model Parameters:\n")
     print("\tScale_Factor: %d\n" %(scaleFactor))
-    print("\tWall_Diameter: %d\n" %(wallD))
+    print("\tWall_Radius: %d\n" %(wallRadius))
+    print("\tWall_Diameter: %d\n" %(wallRadius*2))
     print("\tWall_C_Coordinate: %d\n" %(centerX))
     
     print("Would you like to use these parameters?[y/n]")
@@ -65,19 +67,20 @@ def main():
     
     if(paramSelect == "n"):
         print("Please enter new values for parameters:\n")
-        print("Wall diameter and minimum diameter threshold parameter values should be post-scaling values.")
+        print("Wall radius and minimum diameter threshold parameter values should be post-scaling values.")
         
         print("\n>>Enter new scaling factor: ")
         scaleFactor = int(input())
         
         #The known Diameter of the simulation's Wall sphere.
-        print("\n>>Enter the given wall's diameter", end='')
-        wallD = int(input())
+        print("\n>>Enter the given wall's radius", end='')
+        wallRadius = int(input())
         
         #The X value representing the X-coordinate of the Wall sphere's center.
         print("\n>>Enter the given wall's central x-coordinate:", end='')
         centerX = int(input()) 
     
+    wallD = (wallRadius*2)
     #The minimum Diameter needed to perform the slice and analyze the body areas.
     #Essentially used as a threshold to remove outliers prior to analysis.
     print("\n>>Enter the minimum diameter threshold:", end='')
