@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 
+import subprocess
 import inputAdjustment
 import SphereGen_M
 import SliceStats_M
@@ -40,7 +41,7 @@ def main():
         print("[3]: Run GenBalls Alone (COMING SOON)")
         print("[4]: Run inputAdjustment Alone")
         print("[5]: Run SphereGen Alone")
-        print("[6]: Run CC3D Simulation Alone (COMING SOON)")
+        print("[6]: Run CC3D Simulation Alone (NON-GUI mode)")
         print("[7]: Run SliceStats Alone")
         print("[8]: Run AVSStats Alone")
         print("[9]: Run inputAdjustment + SphereGen")
@@ -108,7 +109,10 @@ def optionFive():
 #[6]: Run CC3D Simulation Alone (COMING SOON)
 def optionSix():
     print("Option Six Selected")
-    print("\tCOMING SOON! Please choose another option.")
+    
+    subprocess.run([r"C:\\CompuCell3D-py3-64bit\\runScript.bat", "-i", r"Master\\AVS_Model\\AVS_Model.cc3d"])
+    print("DONE!")
+    #print("\tCOMING SOON! Please choose another option.")
     
 #[7]: Run SliceStats Alone
 def optionSeven():
