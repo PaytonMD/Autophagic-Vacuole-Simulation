@@ -7,7 +7,7 @@ from copy import deepcopy
 #   Eastern Michigan University
 #   Backues Lab  
 #   Author: Payton Dunning
-#   Last Date Modified: March 31st, 2021
+#   Last Date Modified: May 3rd, 2021
 #
 #   Reads in numerical data representing spheres and outputs a CC3D compatible PIF file representing the
 #   various spheres. Sphere data is read in as lines from either a text file or typped into the console.
@@ -74,7 +74,7 @@ def useFile(alone):
     #List of all lines from the given input file.
     inStreamLines = inStream.readlines()
     
-    print("\n>Build an encapsulating membrane wall? [y/n]")
+    print("\n>>Build an encapsulating membrane wall? [y/n]")
     wallCheck = False
     if(input() == 'y'):
         wallCheck = True
@@ -122,7 +122,7 @@ def useFile(alone):
     
 '''Handles reading sphere data from console and converts it to CC3D PIFF coordinates.'''
 def useConsole():
-    print("Would you like a membrane wall built around bodies? [y/n]")
+    print(">>Would you like a membrane wall built around bodies? [y/n]")
     wallCheck = False
     if(input() == 'y'):
         wallCheck = True
@@ -134,10 +134,10 @@ def useConsole():
     
     #If a wall is to be built, take first sphere entry to use for wall.
     if(wallCheck):
-        print("Enter in sphere data to be used for a vacuole wall: ")
+        print(">>Enter in sphere data to be used for a vacuole wall: ")
         wallData = input()
 
-    print("\nNow enter in all bodies in the format 'Radii X-Coord Y-Coord Z-Coord'. Type STOP when done.")
+    print("\n>>Now enter in all bodies in the format 'Radii X-Coord Y-Coord Z-Coord'. Type STOP when done.")
     print("(Each body should be entered on seperate lines)")
     
     print("\nEnter in the first Body's sphere data: ")
@@ -148,7 +148,7 @@ def useConsole():
     while(sphereInput!="STOP"):
         sphereList.append(sphereInput)       
         
-        print("\nEnter the next Body's sphere data, or STOP:")
+        print("\n>>Enter the next Body's sphere data, or STOP:")
         sphereInput = input()
     
     for sphere in sphereList:
@@ -170,7 +170,7 @@ def useConsole():
     #Begins the vacuole wall creation as a semi-hollowed out sphere.    
     if(wallData!="x"):
         buildWall(wallData, bodyNum)
-    print("\n\nSphereGen_M is DONE.")
+    print("\n\n---SphereGen_M is DONE.---")
 ###END OF consoleSphere FUNCTION###
         
 '''Builds a hollow sphere around the set of regular spheres that represents a vacuole membrane wall.

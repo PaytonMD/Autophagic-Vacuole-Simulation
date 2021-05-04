@@ -49,4 +49,19 @@ class AVS_ModelSteppable(SteppableBasePy):
         #Associated with python code that calls CC3D:
         #pg = CompuCellSetup.persistent_globals
         #pg.return_object = 25.0
+        #if mcs == 501:  # manually write a piff file at MCS step 501
+        myPiffFile, file_path = self.open_file_in_simulation_output_folder("ModelOut", mode='w')
+        if myPiffFile is None:
+            print("\n\ncan't write PIFF file!\naborting\n")
+            #return  
+            self.stop_simulation()
+        # first make all pixels Medium, then overwrite the ones that are not
+        # this is for a 100x100x1 lattice
+        print(0,"Medium",0,101,0,101,0,0, file = myPiffFile)
+        for x, y, z in self.every_pixel():  # visit every pixel
+            cell = self.cell_field[x,y,z]  # get the cell at this pixel
+            if cell:  # check if this pixel is part of a cell or medium
+                cellTypeString="cell_"+str(cell.type)
+                print(cell.id,cellTypeString,x,x,y,y,z,z, file=myPiffFile)
+        myPiffFile.close()
         

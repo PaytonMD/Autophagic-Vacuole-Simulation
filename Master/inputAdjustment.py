@@ -1,6 +1,8 @@
 # -*- coding: utf-8 -*-
+
+############################################################################################################
 #   Author: Payton Dunning
-#   Last Date Modified: March 31st, 2021
+#   Last Date Modified: May 3rd, 2021
 #
 #   Complimentary code for SphereGen.py. Takes in spherical data and makes 2 types of adjustments in order
 #   for the data to be compatible with SphereGen.py, CompuCell 3D, and other AVS project programs.
@@ -9,13 +11,26 @@
 #   lattice is set to). CompuCell 3D's default conditions are not compliant with negative coordinates.
 #
 #   The second adjustment is an optional scaling of the spherical data. If the data is deemed too large the user can specify some
-#   scale to shrink the spheres down by. For instance, a given scale down of 2 would divide all of the diameters and sphere center
-#   coordinates by 2. Other adjustments to the data may be added in time. Uses first number as sphere RADIUS.
-
+#   scale to shrink the spheres down by. For instance, a given scale down of 2 would divide all of the radii and sphere center
+#   coordinates by 2. Other adjustments to the data may be added in time.
+############################################################################################################
+#   This program is free software: you can redistribute it and/or modify
+#   it under the terms of the GNU General Public License as published by
+#   the Free Software Foundation, either version 3 of the License, or
+#   (at your option) any later version.
+#
+#   This program is distributed in the hope that it will be useful,
+#   but WITHOUT ANY WARRANTY; without even the implied warranty of
+#   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#   GNU General Public License for more details.
+#
+#   You should have received a copy of the GNU General Public License
+#   along with this program.  If not, see <https://www.gnu.org/licenses/>.
+############################################################################################################
 fileInput = "" #Name of input file.
 fileOutput = "sphereData.txt" #Name of output file.
 
-#paramsFile is used to keep track of several variables used throughout the pipeline.
+#paramsFile is used to keep track of several variables used by multiple scipts.
 paramsFile = "attributes/Model_Parameters.txt"
 
 def main():    
@@ -24,7 +39,7 @@ def main():
     print("\n>>Enter INPUT file path and name:", end='')
     fileInput = input()
     
-    print("\nAll output will be written to 'sphereData.txt'")
+    print("\n---All output will be written to 'sphereData.txt'---")
     
     #Read in all data from input file and store in ogData
     ogData = [] #og as in original
@@ -40,19 +55,20 @@ def main():
     inStream.close()
     
     print("Original Coordinates:")
+    print("(Coordinates here are the sphere's radius, X-center, Y-center, and Z-center.)")
     for sphere in ogData:
         print(sphere)
     
     #An array of the x, y, and z coordinate shifts needed to be made to the scaled spheres.
     maxChanges = [0, 0, 0]
     
-    print("\nWould you like to scale down the coordinates [y/n]:")
+    print("\n>>>Would you like to scale down the coordinates [y/n]:")
     
     toScale = input()
     scaledData = ogData
     
     if(toScale == "y" or toScale =="Y"):
-        print("\nBy what factor?")
+        print("\n>>>Enter Scaling Factor:")
         #scaleFactor here being an integer that will be used to divide the values of all the spheres.
         #A scaleFactor of 2 would cut the size of the spheres, and model, in half.
         scaleFactor = int(input())
@@ -61,9 +77,14 @@ def main():
         scaledData = scaleDown(ogData, scaleFactor)
     else:
         lastScaleFactor = 1 #No scale factor was used.
+        
+    print("\nScaled Coordinates:")
+    
     for sphere in scaledData:
+        print(sphere)
         #The diagnose function determines how much the sphere data should be shifted based on an individual sphere's position and size.
         potentialChanges = diagnose(sphere)
+        
         if(potentialChanges[0] > maxChanges[0]):
             maxChanges[0] = potentialChanges[0]
             
@@ -82,7 +103,7 @@ def main():
     maxY = 0
     maxZ = 0
     
-    print("\nModified Coordinates:")
+    print("\nFinal Coordinates:")
     #Prints the newly modified sphere data and determines actual values for maxX, maxY, and maxZ.
     for sphere in shiftedData:
         print(sphere)
@@ -99,18 +120,16 @@ def main():
     
         if(tempZ > maxZ):
             maxZ = tempZ
-        
-            
-    print("\nFinal Coordinate data:")
 
     #Output to default file for now:
+    #TO-DO: Combine the above and below for loops!
     outStream = open(fileOutput, "w")
     for sphere in shiftedData:
-        print(sphere)
+        #print(sphere)
         outLine = str(sphere[0]) + " " + str(sphere[1]) + " " + str(sphere[2]) + " " + str(sphere[3]) + "\n"
         outStream.write(outLine)
         
-    print("\nThe Lattice will likely need to be at least %d x %d x %d (X x Y x Z) in size." %(maxX, maxY, maxZ))
+    print("\nThe Lattice will need to be at least %d x %d x %d (X x Y x Z) in size." %(maxX, maxY, maxZ))
     wallRadius = int(shiftedData[0][0])
     wallXCoord = int(shiftedData[0][1])
     print("Final Wall radius = %d" %(wallRadius))
@@ -118,7 +137,7 @@ def main():
         
         
     outStream.close()
-    print("\n\ninputAdjustment is DONE.")
+    print("\n\n---inputAdjustment is DONE.---")
     
     #Model Parameters Update:
     updateParams(scaleFactor, wallRadius, wallXCoord)

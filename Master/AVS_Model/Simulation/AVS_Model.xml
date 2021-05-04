@@ -10,7 +10,7 @@
    <Potts>
       <!-- Basic properties of CPM (GGH) algorithm -->
       <Dimensions x="251" y="251" z="251"/>
-      <Steps>10</Steps>
+      <Steps>15</Steps>
       <Temperature>25.0</Temperature>
       <Flip2DimRatio>1</Flip2DimRatio>
       <NeighborOrder>2</NeighborOrder>
@@ -41,10 +41,10 @@
       <PIFName>./Simulation/Model.piff</PIFName>
    </Steppable>
    
-   <Steppable Frequency="5" Type="PIFDumper">
-      <!-- Periodically stores cell layout configuration in a piff format -->
-      <PIFName>./Simulation/ModelOut</PIFName>
-      <PIFFileExtension>piff</PIFFileExtension>
-   </Steppable>
+    <Steppable Frequency="5" Type="PIFDumper">
+       <!-- Periodically stores cell layout configuration in a piff format -->
+       <PIFName>AVS_Model</PIFName>
+       <PIFFileExtension>piff</PIFFileExtension>
+    </Steppable>
 
 </CompuCell3D>

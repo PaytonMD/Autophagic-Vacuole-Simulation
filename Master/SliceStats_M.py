@@ -2,12 +2,13 @@
 import sys
 import random
 import math
-
+from tkinter import Tk
+from tkinter.filedialog import askopenfilename
 ############################################################################################################
 #   Eastern Michigan University
 #   Backues Lab  
 #   Author: Payton Dunning
-#   Last Date Modified: March 31st, 2021
+#   Last Date Modified: May 3rd, 2021
 #
 #   A script for analyzing the contents of an Autophagic Vacuole Simulation (AVS) project formatted 
 #   Compucell 3D (CC3D) simulation. The script takes in a PIF file (.piff), that must contain "Body" and
@@ -29,25 +30,29 @@ import math
 #   along with this program.  If not, see <https://www.gnu.org/licenses/>.
 ############################################################################################################
 
-#paramsFile is used to keep track of several variables used throughout the pipeline.
+#paramsFile is used to keep track of several variables used by multiple scipts.
 paramsFile = "attributes/Model_Parameters.txt"
 
 #I realize it's unnecessary to have everything in this single function, but it'll be split up at some point.
-def main():
+#cycleRun is a boolean variable. It is false when SliceStats is run alone, and true when run as part of the AVS cycle.
+def main(cycleRun):
     print("Now running Master\SliceStats_M.py")
-    
-    inputName = ""
     outputName = ""
-    print(">>Enter INPUT PIF file path+name:")
-    inputName = input()
+    inputName = ""
     
-    #print("\n>>Enter OUTPUT file path+name:")
-    #outputName = input()
+    if(cycleRun):
+        print("Please Select file...")
+        #inputName = r""
+        Tk().withdraw()
+        filename = askopenfilename()
+        inputName = filename
+        print("Given File Name: %s" %(filename))
+    else: 
+        print(">>Enter INPUT PIF file path+name:")
+        inputName = input()
+
     #The master version of SliceStats will just use this predefined output file for easier use of this script.
     outputName = "sliceData/sliceCoords.txt"
-        
-    #A secondary output file. Currently unused, but I have ideas for it.
-    #sliceFile = "sliceData.txt"
     
     print("Grabbing AVS Model Parameters...\n")
     modelParams = grabParams()
@@ -61,14 +66,14 @@ def main():
     print("\tScale_Factor: %d\n" %(scaleFactor))
     print("\tWall_Radius: %d\n" %(wallRadius))
     print("\tWall_Diameter: %d\n" %(wallRadius*2))
-    print("\tWall_C_Coordinate: %d\n" %(centerX))
+    print("\tWall_X_Coordinate: %d\n" %(centerX))
     
-    print("Would you like to use these parameters?[y/n]")
+    print(">>Would you like to use these parameters?[y/n]")
     paramSelect = input()
     
     if(paramSelect == "n"):
-        print("Please enter new values for parameters:\n")
-        print("Wall radius and minimum diameter threshold parameter values should be post-scaling values.")
+        print(">>Please enter new values for parameters:\n")
+        print("(Wall radius and slice recognition limit parameter values should be post-scaling values)")
         
         print("\n>>Enter new scaling factor: ")
         scaleFactor = int(input())
@@ -82,25 +87,27 @@ def main():
         centerX = int(input()) 
     
     wallD = (wallRadius*2)
-    #The minimum Diameter needed to perform the slice and analyze the body areas.
-    #Essentially used as a threshold to remove outliers prior to analysis.
-    #Unscalled default is a 300nm minimum radius, or 600nm minimum diameter.
-    unScalledMinD = 600
-    minDiam = (unScalledMinD / scaleFactor)
-    print("Default minimum diameter threshold = %dunits" %(minDiam))
     
-    print("Would you like to use this default minimum threshold?[y/n]")
+    #The slice recognition limit needed to perform the slice and analyze the body areas.
+    #Essentially used as a threshold to remove outliers prior to analysis.
+    #Unscalled default is a 300nm minimum radius (600nm minimum diameter).
+    unScalledRecogLimit = 600
+    recogLimit = (unScalledRecogLimit / scaleFactor)
+    print("Default slice recognition limit = %dunits" %(recogLimit))
+    
+    print(">>Would you like to use this default minimum threshold?[y/n]")
     minDInput = input()
     
-    if(minDInput == "n"):
-        print("\n>>Enter new minimum diameter threshold (scalled): ")
-        minDiam = int(input())
+    if(minDInput == "n" or minDInput == "N"):
+        print("\n>>Enter new slice recognition limit (scaled): ")
+        recogLimit = int(input())
     
     #Useable range of x-coordinates for the main slice.
-    diamRangeVar = int((wallD - minDiam) / 2)
+    #diamRangeVar = int((wallD - minDiam) / 2)
+    diamRangeVar = math.sqrt((wallRadius**2)-(recogLimit**2))
         
     if(diamRangeVar <= 0):
-        sys.exit("\n!!!This model does not support a minimum diameter threshold of %s" %(minDiam))
+        sys.exit("\n!!!This model does not support a slice recognition limit of %s" %(recogLimit))
         
     #The starting and ending X-coordinates viable for a slice to be taken at.
     minX = centerX - diamRangeVar
@@ -199,6 +206,7 @@ def main():
             lineCollection[posi].append(bodyEntry)
             
     index1 = 0
+    
     #The lines that made it into lineCollection are recordered to the primary output file.
     for array in lineCollection:
         index2 = 0

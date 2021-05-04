@@ -118,3 +118,9 @@ compactSpheres = function(X,r,Xmax=1,Ymax=1,Zmax=1) {
     X[i]=glp_get_col_prim(prob,i)
   list(positions=X,status=glp_get_status(prob))
 }
+
+#Since it is easier to run just genBalls than calling a specific function, I've added a simple call to the genBalls function
+#at the end of this file so that a call to genBalls.r automatically uses the genBalls function.
+#Might capture arguments passed in and use them in the genBalls parameters.
+setwd("C:\\Users\\Temp\\Desktop\\AVS\\Master")
+genBalls()

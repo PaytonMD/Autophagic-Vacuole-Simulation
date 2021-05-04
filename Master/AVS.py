@@ -12,9 +12,11 @@ import Condenser_M
 #   Eastern Michigan University
 #   Backues Lab  
 #   Author: Payton Dunning
-#   Last Date Modified: MArch 31st, 2021
+#   Last Date Modified: May 3rd, 2021
 #
-#   DESCRIPTION
+#   Master script for the Autophagic Vacuole Simulation project software pipeline. This script is used as the initial interface with
+#   users and is responsible for calling the other scripts in the pipeline and generally controlling the flow of information and
+#   functionality.
 ############################################################################################################
 #   This program is free software: you can redistribute it and/or modify
 #   it under the terms of the GNU General Public License as published by
@@ -30,29 +32,29 @@ import Condenser_M
 #   along with this program.  If not, see <https://www.gnu.org/licenses/>.
 ############################################################################################################
 
-#paramsFile is used to keep track of several variables used throughout the pipeline.
+#paramsFile is used to keep track of several variables used by multiple scipts.
 paramsFile = "attributes/Model_Parameters.txt"
 
 def main():
     while(True):
         print(">>Please select from the following options by entering the corresponding number:")
-        print("[1]: Single AVS Pipeline Run (COMING SOON)")
-        print("[2]: Mass AVS Pipeline Runs (COMING SOON)")
-        print("[3]: Run GenBalls Alone (COMING SOON)")
-        print("[4]: Run inputAdjustment Alone")
-        print("[5]: Run SphereGen Alone")
-        print("[6]: Run CC3D Simulation Alone (NON-GUI mode)")
-        print("[7]: Run SliceStats Alone")
-        print("[8]: Run AVSStats Alone")
-        print("[9]: Run inputAdjustment + SphereGen")
-        print("[10]: Run Condenser Utility Script")
-        print("[11]: Read the readme file (COMING SOON)")
-        print("[0]: Exit AVS")
+        print("\t[1]: Single AVS Pipeline Run (COMING SOON)")
+        print("\t[2]: Mass AVS Pipeline Runs (COMING SOON)")
+        print("\t[3]: Run GenBalls Alone (COMING SOON)")
+        print("\t[4]: Run inputAdjustment Alone")
+        print("\t[5]: Run SphereGen Alone")
+        print("\t[6]: Run CC3D Simulation Alone (NON-GUI mode)")
+        print("\t[7]: Run SliceStats Alone")
+        print("\t[8]: Run AVSStats Alone")
+        print("\t[9]: Run inputAdjustment + SphereGen")
+        print("\t[10]: Run Condenser Utility Script")
+        print("\t[11]: Read the readme file (COMING SOON)")
+        print("\t[0]: Exit AVS")
         
         scriptChoice = input()
         
         if(scriptChoice == "0"):
-            print("Now exiting AVS.")
+            print("---Now exiting AVS---")
             #This simply exits the program. Equivalent to using sys.exit
             raise SystemExit
         elif(scriptChoice == "1"):
@@ -78,37 +80,47 @@ def main():
         elif(scriptChoice == "11"):
             optionEleven()
         else:
-            print("Invalid Input, please select from options 0~11")
+            print("---Invalid Input, please select from options 0~11---")
 
 #[1] Single AVS Pipeline Run (COMING SOON)
 def optionOne():
-    print("Option One Selected")
+    print("---Option One Selected---")
     print("\tCOMING SOON! Please choose another option.")
     
 #[2] Mass AVS Pipeline Runs (COMING SOON)
 def optionTwo():
-    print("Option Two Selected")
+    print("---Option Two Selected---")
     print("\tCOMING SOON! Please choose another option.")
 
 #[3] Run GenBalls Alone (COMING SOON)
 def optionThree():
-    print("Option Three Selected")
-    print("\tCOMING SOON! Please choose another option.")
+    print("---Option Three Selected---")
+    r_path = "C:\\Users\\Temp\\.conda\\envs\\rstudio\\lib\\R\\bin\\Rscript.exe"
+    script_path = "C:\\Users\\Temp\\Desktop\\AVS\\Master\\genBalls.r"
+    args = [r_path,"--vanilla", script_path]
+    #cmd = [r_path, script_path] + args
+    #result = subprocess.check_output(cmd, universal_newlines=True)
+    #subprocess.run(cmd, universal_newlines=True)
+    fileOut = "rData.txt"
+    subprocess.call(args, shell=True)
+    
+    print("Option 3 Done!")
+    
 
 #[4]: Run inputAdjustment Alone
 def optionFour():
-    print("Option Four Selected")
+    print("---Option Four Selected---")
     inputAdjustment.main()
     
     
 #[5]: Run SphereGen Alone
 def optionFive():
-    print("Option Five Selected")
+    print("---Option Five Selected---")
     SphereGen_M.main(True)
     
 #[6]: Run CC3D Simulation Alone (COMING SOON)
 def optionSix():
-    print("Option Six Selected")
+    print("---Option Six Selected---")
     
     subprocess.run([r"C:\\CompuCell3D-py3-64bit\\runScript.bat", "-i", r"Master\\AVS_Model\\AVS_Model.cc3d"])
     print("DONE!")
@@ -116,28 +128,28 @@ def optionSix():
     
 #[7]: Run SliceStats Alone
 def optionSeven():
-    print("Option Seven Selected")
-    SliceStats_M.main()
+    print("---Option Seven Selected---")
+    SliceStats_M.main(True)
     
 #[8] Run AVSStats Alone
 def optionEight():
-    print("Option Eight Selected")
+    print("---Option Eight Selected---")
     AVSStats.main()
  
 #[9]: Run inputAdjustment + SphereGen
 def optionNine():
-    print("Option Nine Selected")
+    print("---Option Nine Selected---")
     inputAdjustment.main()
     SphereGen_M.main(False)
 
 #[10] Run Condenser Utility Script
 def optionTen():
-    print("Option Ten Selected")
+    print("---Option Ten Selected---")
     Condenser_M.main()
 
 #[11] Read the readme file (COMING SOON)
 def optionEleven():
-    print("Option Eleven Selected")
+    print("---Option Eleven Selected---")
     print("README is not yet available. Sorry :( ")
 
 main()
