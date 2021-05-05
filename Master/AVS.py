@@ -1,6 +1,8 @@
 # -*- coding: utf-8 -*-
 
 import subprocess
+import time
+
 import inputAdjustment
 import SphereGen_M
 import SliceStats_M
@@ -17,6 +19,9 @@ import Condenser_M
 #   Master script for the Autophagic Vacuole Simulation project software pipeline. This script is used as the initial interface with
 #   users and is responsible for calling the other scripts in the pipeline and generally controlling the flow of information and
 #   functionality.
+#
+#   Important Note: AVS software was developed and tested primarily on Windows OS. AVS has not (yet) been
+#       tested on Mac or Linux Operating Systems.
 ############################################################################################################
 #   This program is free software: you can redistribute it and/or modify
 #   it under the terms of the GNU General Public License as published by
@@ -118,12 +123,39 @@ def optionFive():
     print("---Option Five Selected---")
     SphereGen_M.main(True)
     
-#[6]: Run CC3D Simulation Alone (COMING SOON)
+#[6]: Run CC3D Simulation Alone
 def optionSix():
     print("---Option Six Selected---")
+    print("\n---Running CC3D requires the CC3D batch file 'runScript.bat'.---")
+    print("---(The default installation site on Windows is 'C:\CompuCell3D-py3-64bit\')---")
+    print("---For both the CC3D batch and model files, please enter their FULL file paths!---\n")
     
-    subprocess.run([r"C:\\CompuCell3D-py3-64bit\\runScript.bat", "-i", r"Master\\AVS_Model\\AVS_Model.cc3d"])
-    print("DONE!")
+    print(">>Enter file path+name for your CC3D runScript.bat file:")
+    batFile = input()
+    
+    print(">>Enter file path+name for your CC3D Model's .cc3d file:")
+    cc3dModelFile = input()
+    
+    #Running CC3D this way require FULL FILE PATHS to the location of "runScript.bat" and the
+    #   CC3D model you'd like to use.
+    
+    #For testing purposes on Payton D' Computer:
+    #CC3D Bat File Path+Name: batFile = r"C:\\CompuCell3D-py3-64bit\\runScript.bat"
+    #CC3D Model File Path+Name: cc3dModel = r"C:\\Users\\Temp\\Desktop\\AVS\\Master\\AVS_Model\\AVS_Model.cc3d"
+    
+    print("\n\t---Compucell3D Simulation Start (Can take seconds to hours depending on model used.)---")
+    startTime = (time.time()*1000) # in milliseconds
+    
+    subprocess.run([batFile, "-i", cc3dModelFile])
+    
+    endTime = (time.time()*1000) # in milliseconds
+    print("\n\t---Compucell3D Simulation Finished---")
+    
+    
+    totalTime = (endTime - startTime)/1000 #In seconds
+    print("\t---CC3D Model Runtime: ~ %d seconds---" %(totalTime))
+    
+    print("---Option Six Complete---")
     #print("\tCOMING SOON! Please choose another option.")
     
 #[7]: Run SliceStats Alone
