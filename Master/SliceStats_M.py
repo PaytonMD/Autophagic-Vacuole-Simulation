@@ -88,26 +88,33 @@ def main(cycleRun):
     
     wallD = (wallRadius*2)
     
-    #The slice recognition limit needed to perform the slice and analyze the body areas.
-    #Essentially used as a threshold to remove outliers prior to analysis.
+    #The minimum vacuole diameter needed to perform the slice and analyze the body areas.
+    #Used to define the usable range of coordinates a slice can be taken at.
+    #Essentially used as a threshold within to take slices.
     #Unscalled default is a 300nm minimum radius (600nm minimum diameter).
-    unScalledRecogLimit = 600
-    recogLimit = (unScalledRecogLimit / scaleFactor)
-    print("Default slice recognition limit = %dunits" %(recogLimit))
+    #Used to be called recognition limit, but that is meant to be used for minimum body size.
+    unScalledVacMin = 600
+    vacMin = (unScalledVacMin / scaleFactor)
+    print("Default slice recognition limit = %dunits" %(vacMin))
     
-    print(">>Would you like to use this default minimum threshold?[y/n]")
+    print(">>Would you like to use this default minimum vacuole slice threshold?[y/n]")
     minDInput = input()
     
     if(minDInput == "n" or minDInput == "N"):
-        print("\n>>Enter new slice recognition limit (scaled): ")
-        recogLimit = int(input())
+        print("\n>>Enter new minimum vacuole threshold (scaled): ")
+        vacMin = int(input())
     
     #Useable range of x-coordinates for the main slice.
     #diamRangeVar = int((wallD - minDiam) / 2)
-    diamRangeVar = math.sqrt((wallRadius**2)-(recogLimit**2))
+    wallRecDiff = (wallRadius**2)-(vacMin**2)
+    diamRangeVar = 0
+    
+    #(wallRadius**2)-(recogLimit**2) must be checked to be non-negative before attempted to find its square root.
+    if(wallRecDiff > 0):
+        diamRangeVar = math.sqrt(wallRecDiff)
         
     if(diamRangeVar <= 0):
-        sys.exit("\n!!!This model does not support a slice recognition limit of %s" %(recogLimit))
+        sys.exit("\n!!!This model does not support a vacuole slice threshold of %s" %(vacMin))
         
     #The starting and ending X-coordinates viable for a slice to be taken at.
     minX = centerX - diamRangeVar
@@ -115,10 +122,9 @@ def main(cycleRun):
     
     
     print(">>Finally, select an option for determining where a slice will be taken:")
-    print("\t[0 for slice to be taken at centerX coordinate.]")
-    print("\t[1 for slice to be taken at a randomly selected coordinate.]")
-    print("\t[2 for slice to be taken at a user specified coordinate.]")
-    #\n\t[0 for file input]\n\t[1 for console input]", end=''
+    print("\t[0 for slice to be taken at centerX coordinate]")
+    print("\t[1 for slice to be taken at a randomly selected coordinate]")
+    print("\t[2 for slice to be taken at a user specified coordinate]")
         
     sliceChoice = int(input())
     sliceCoord = 0
@@ -151,8 +157,7 @@ def main(cycleRun):
         if(data[1] == "Body"):
             bodyText.append(line)
 
-    inStream.close()                
-
+    inStream.close()
     
         
     print("\n\n\t minX = %d || maxX = %d \n" %(minX, maxX))
@@ -230,12 +235,21 @@ def main(cycleRun):
     
     #An array of arrays. Each sub array contains 2 things: "Body Num", "Max Area" for that body.
     bodyAreas = []
-    #The minimum area threshold for the sub-slices of the bodies. This is based on a 50nm limit
+    #The minimum recognition limit for the sub-slices of the bodies. This is based on a 50nm limit
     #for body radius givin by Dr.Backues. This translates to a minimum area of ~7854.
     #Area of circle = pi * r^2
-    minBodyRadius = (50 / scaleFactor)
-    minBodyArea = math.pi * (minBodyRadius**2)
-    print("Current minimum body threshold = %d" %(minBodyArea))
+    #This default of 7854 is far too high of a threshold for most bodies. We'll have to rethink exactly
+    # what to use here. For now (5/27/2021) I'll change minBodyArea to something else...
+    minBodyRadius = (50.0 / scaleFactor)
+    recogLimit = math.pi * (minBodyRadius**2)
+    print("Current recognition limit = %d" %(recogLimit))
+    
+    print(">>Would you like to use this default recognition limit? [y/n]")
+    bodyCheck = input()
+    
+    if(bodyCheck == "n" or bodyCheck == "N"):
+        print(">>Please enter a new minimum recognition limit with scaling factored in: ")
+        recogLimit = int(input())
     
     index1 = 0
     #The outer for loop iterates through each body.
@@ -274,7 +288,7 @@ def main(cycleRun):
                 if(currentArea > maxArea):
                     maxArea = currentArea
 
-                if(maxArea >= minBodyArea):
+                if(maxArea >= recogLimit):
                     bodyAreas.append([currentBody, maxArea])
         index1 += 1
     
