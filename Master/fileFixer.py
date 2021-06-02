@@ -44,9 +44,8 @@ if(fixerCheck == "y" or fixerCheck == "Y"):
     
     for piffCoord in piffLines:
         data = piffCoord.split()
-        
         #Normal coordinates will have Body/Wall in index 1, abnormal coordinates will have them in index 2.
-        if( (data[2] == "Body" or data[2] == "Wall") and (len(data) > 8 )):
+        if( (len(data) > 8 ) and (data[2] == "Body" or data[2] == "Wall")):
             fixedLine = "%s %s %s %s %s %s %s %s \n" %(data[1], data[2], data[3], data[4], data[5], data[6], data[7], data[8])
             outStream.write(fixedLine)
     outStream.close()            
