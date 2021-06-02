@@ -35,12 +35,12 @@ paramsFile = "attributes/Model_Parameters.txt"
 
 #I realize it's unnecessary to have everything in this single function, but it'll be split up at some point.
 #cycleRun is a boolean variable. It is false when SliceStats is run alone, and true when run as part of the AVS cycle.
-def main(cycleRun, fileSelectOpt):
+def main(fileSelectOpt):
     print("Now running Master\SliceStats_M.py")
     outputName = ""
     inputName = ""
     
-    if(cycleRun):
+    if(fileSelectOpt):
         print("Please Select file...")
         #inputName = r""
         Tk().withdraw()
@@ -133,7 +133,7 @@ def main(cycleRun, fileSelectOpt):
         sliceCoord = centerX
         
     elif(sliceChoice == 1):
-        sliceChoice = random.randint(minX, maxX)
+        sliceCoord = random.randint(minX, maxX)
         
     elif(sliceChoice == 2):
         print("\n>>Enter the x coordinate you'd like the slice to be taken at:")
