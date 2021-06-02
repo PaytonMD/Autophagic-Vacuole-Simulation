@@ -8,6 +8,9 @@ import SphereGen_M
 import SliceStats_M
 import AVSStats
 import Condenser_M
+
+from tkinter import Tk
+from tkinter.filedialog import askopenfilename
 #from rpy2.robjects import r
 
 ############################################################################################################
@@ -41,6 +44,15 @@ import Condenser_M
 paramsFile = "attributes/Model_Parameters.txt"
 
 def main():
+    
+    print("Welcome to the Autophagic Vacuole Simulation (AVS) Project")
+    print("Would you like to run this program with File Explorer selection enabled? [y/n]")
+    explorerEnabled = False
+    
+    optionSelection = input()
+    if(optionSelection == "y" or optionSelection == "Y"):
+        explorerEnabled = True
+    
     while(True):
         print(">>Please select from the following options by entering the corresponding number:")
         print("\t[1]: Single AVS Pipeline Run (COMING SOON)")
@@ -48,7 +60,7 @@ def main():
         print("\t[3]: Run GenBalls Alone (COMING SOON)")
         print("\t[4]: Run inputAdjustment Alone")
         print("\t[5]: Run SphereGen Alone")
-        print("\t[6]: Run CC3D Simulation Alone (NON-GUI mode)")
+        print("\t[6]: Run CC3D Simulation Alone (GUI-Less mode)")
         print("\t[7]: Run SliceStats Alone")
         print("\t[8]: Run AVSStats Alone")
         print("\t[9]: Run inputAdjustment + SphereGen")
@@ -63,68 +75,96 @@ def main():
             #This simply exits the program. Equivalent to using sys.exit
             raise SystemExit
         elif(scriptChoice == "1"):
-            optionOne()
+            optionOne(explorerEnabled)
         elif(scriptChoice == "2"):
-            optionTwo()
+            optionTwo(explorerEnabled)
         elif(scriptChoice == "3"):
-            optionThree()
+            optionThree(explorerEnabled)
         elif(scriptChoice == "4"):
-            optionFour()
+            optionFour(explorerEnabled)
         elif(scriptChoice == "5"):
-            optionFive()
+            optionFive(explorerEnabled)
         elif(scriptChoice == "6"):
-            optionSix()
+            optionSix(explorerEnabled)
         elif(scriptChoice == "7"):
-            optionSeven()
+            optionSeven(explorerEnabled)
         elif(scriptChoice == "8"):
-            optionEight()
+            optionEight(explorerEnabled)
         elif(scriptChoice == "9"):
-            optionNine()
+            optionNine(explorerEnabled)
         elif(scriptChoice == "10"):
-            optionTen()
+            optionTen(explorerEnabled)
         elif(scriptChoice == "11"):
             optionEleven()
         else:
             print("---Invalid Input, please select from options 0~11---")
 
 #[1] Single AVS Pipeline Run (COMING SOON)
-def optionOne():
+def optionOne(fileSelectOpt):
     print("---Option One Selected---")
     print("\tCOMING SOON! Please choose another option.")
+    print("---Option One Complete---")
     
 #[2] Mass AVS Pipeline Runs (COMING SOON)
-def optionTwo():
+def optionTwo(fileSelectOpt):
     print("---Option Two Selected---")
     print("\tCOMING SOON! Please choose another option.")
+    print("---Option Two Complete---")
 
 #[3] Run GenBalls Alone (COMING SOON)
-def optionThree():
+def optionThree(fileSelectOpt):
     print("---Option Three Selected---")
-    r_path = "C:\\Users\\Temp\\.conda\\envs\\rstudio\\lib\\R\\bin\\Rscript.exe"
-    script_path = "C:\\Users\\Temp\\Desktop\\AVS\\Master\\genBalls.r"
+    
+    r_path = ""
+    script_path = ""
+    
+    #For testing purposes on Payton D's Computer:
+    #r_path = "C:\\Users\\Temp\\.conda\\envs\\rstudio\\lib\\R\\bin\\Rscript.exe"
+    #script_path = "C:\\Users\\Temp\\Desktop\\AVS\\Master\\genBalls.r"
+    #If errors related to 'dll' files not being found occurs, the easiest solution is usually
+    #to just go and download those missing files (not so surprising).
+    if(fileSelectOpt==True):
+        print(">>Select your 'bin\Rscript.exe' file:")
+        print("(The file selection screen may appear BEHIND your current application)")
+        Tk().withdraw()
+        r_path = askopenfilename()
+        
+        print(">>Select your 'Master\genBalls.r' file:")
+        print("(The file selection screen may appear BEHIND your current application)")
+        Tk().withdraw()
+        script_path = askopenfilename()
+        
+    else:
+        print("Enter the full path and file name of your 'Rscript.exe' file.")
+        r_path = input()
+        
+        print("Enter the fulle path and file name of your 'genBalls.r' script.")
+        script_path = input()
     args = [r_path,"--vanilla", script_path]
     #cmd = [r_path, script_path] + args
     #result = subprocess.check_output(cmd, universal_newlines=True)
     #subprocess.run(cmd, universal_newlines=True)
     fileOut = "rData.txt"
-    subprocess.call(args, shell=True)
+    #subprocess.call(args, shell=True)
+    subprocess.run([r_path, script_path])
+    #subprocess.run(r_path, script_path, "--vanilla")
     
-    print("Option 3 Done!")
-    
+    print("---Option Three Complete---")
 
 #[4]: Run inputAdjustment Alone
-def optionFour():
+def optionFour(fileSelectOpt):
     print("---Option Four Selected---")
-    inputAdjustment.main()
-    
+    inputAdjustment.main(fileSelectOpt)
+    print("---Option Four Complete---")
     
 #[5]: Run SphereGen Alone
-def optionFive():
+def optionFive(fileSelectOpt):
     print("---Option Five Selected---")
-    SphereGen_M.main(True)
+    SphereGen_M.main(True, fileSelectOpt)
+    print("---Option Five Complete---")
     
 #[6]: Run CC3D Simulation Alone
-def optionSix():
+def optionSix(fileSelectOpt):
     print("---Option Six Selected---")
     print("\n---Running CC3D requires the CC3D batch file 'runScript.bat'.---")
     print("---(The default installation site on Windows is 'C:\CompuCell3D-py3-64bit\')---")
@@ -156,32 +196,36 @@ def optionSix():
     print("\t---CC3D Model Runtime: ~ %d seconds---" %(totalTime))
     
     print("---Option Six Complete---")
-    #print("\tCOMING SOON! Please choose another option.")
     
 #[7]: Run SliceStats Alone
-def optionSeven():
+def optionSeven(fileSelectOpt):
     print("---Option Seven Selected---")
-    SliceStats_M.main(True)
+    SliceStats_M.main(True, fileSelectOpt)
+    print("---Option Seven Complete---")
     
 #[8] Run AVSStats Alone
-def optionEight():
+def optionEight(fileSelectOpt):
     print("---Option Eight Selected---")
-    AVSStats.main()
+    AVSStats.main(fileSelectOpt)
+    print("---Option Eight Complete---")
  
 #[9]: Run inputAdjustment + SphereGen
-def optionNine():
+def optionNine(fileSelectOpt):
     print("---Option Nine Selected---")
-    inputAdjustment.main()
-    SphereGen_M.main(False)
+    inputAdjustment.main(fileSelectOpt)
+    SphereGen_M.main(False, fileSelectOpt)
+    print("---Option Nine Complete---")
 
 #[10] Run Condenser Utility Script
-def optionTen():
+def optionTen(fileSelectOpt):
     print("---Option Ten Selected---")
-    Condenser_M.main()
+    Condenser_M.main(fileSelectOpt)
+    print("---Option Ten Complete---")
 
 #[11] Read the readme file (COMING SOON)
 def optionEleven():
     print("---Option Eleven Selected---")
     print("README is not yet available. Sorry :( ")
+    print("---Option Eleven Complete---")
 
 main()

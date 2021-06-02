@@ -4,6 +4,9 @@ import statsmodels.api as sm
 import numpy as np
 import matplotlib.pyplot as plt
 from statsmodels.graphics.gofplots import qqplot_2samples
+from tkinter import Tk
+from tkinter.filedialog import askopenfilename
+
 ############################################################################################################
 #   Eastern Michigan University
 #   Backues Lab  
@@ -26,7 +29,7 @@ from statsmodels.graphics.gofplots import qqplot_2samples
 #   along with this program.  If not, see <https://www.gnu.org/licenses/>.
 ############################################################################################################
 
-def main():
+def main(fileSelectOpt):
     print(">>Please select a statistical script to run from the following 3 options: ")
     print("[1]: Find average body size")
     print("[2]: Q-Q (quantile-quantile) plot")

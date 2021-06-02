@@ -2,6 +2,8 @@
 import math
 import numpy as np
 from copy import deepcopy
+from tkinter import Tk
+from tkinter.filedialog import askopenfilename
 
 ############################################################################################################
 #   Eastern Michigan University
@@ -35,7 +37,7 @@ fileOutput = "" #Name of output file.
 '''Takes in console input to determine method of sphere data input (file vs console).
     alone is a boolean variable that is False when selecting the inputAdjustment + SphereGen
     option in the master AVS script.'''
-def main(alone):
+def main(alone, fileSelectOpt):
     print("Now running Master\SphereGen_M.py")
     
     #Connects the following fileOutput to the global fileOutput variable.

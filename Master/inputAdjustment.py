@@ -1,4 +1,6 @@
 # -*- coding: utf-8 -*-
+from tkinter import Tk
+from tkinter.filedialog import askopenfilename
 
 ############################################################################################################
 #   Author: Payton Dunning
@@ -33,11 +35,17 @@ fileOutput = "sphereData.txt" #Name of output file.
 #paramsFile is used to keep track of several variables used by multiple scipts.
 paramsFile = "attributes/Model_Parameters.txt"
 
-def main():    
+def main(fileSelectOpt):
     print("Now running Master\inputAdjustment.py")
     
-    print("\n>>Enter INPUT file path and name:", end='')
-    fileInput = input()
+    fileInput = ""
+    if(fileSelectOpt == True):
+        print(">>Select the sphere data file you'd like to use:")
+        Tk().withdraw()
+        fileInput = askopenfilename()
+    else:
+        print("\n>>Enter INPUT file path and name:", end='')
+        fileInput = input()
     
     print("\n---All output will be written to 'sphereData.txt'---")
     

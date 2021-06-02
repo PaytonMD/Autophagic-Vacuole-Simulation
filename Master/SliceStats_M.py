@@ -35,7 +35,7 @@ paramsFile = "attributes/Model_Parameters.txt"
 
 #I realize it's unnecessary to have everything in this single function, but it'll be split up at some point.
 #cycleRun is a boolean variable. It is false when SliceStats is run alone, and true when run as part of the AVS cycle.
-def main(cycleRun):
+def main(cycleRun, fileSelectOpt):
     print("Now running Master\SliceStats_M.py")
     outputName = ""
     inputName = ""
