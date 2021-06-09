@@ -32,14 +32,8 @@ from tkinter.filedialog import askopenfilename
 #   You should have received a copy of the GNU General Public License
 #   along with this program.  If not, see <https://www.gnu.org/licenses/>.
 ############################################################################################################
-
-
-#I realize it's unnecessary to have everything in this single function, but it'll be split up at some point.
-#cycleRun is a boolean variable. It is false when SliceStats is run alone, and true when run as part of the AVS cycle.
-def main(fileSelectOpt):
+def FileOpen(fileSelectOpt):
     print("Now running SliceStats_M.py with your hard-coded options")
-    outputName = ""
-    inputName = ""
     
     if(fileSelectOpt):
         print("Please Select file...")
@@ -51,10 +45,15 @@ def main(fileSelectOpt):
     else: 
         print(">>Enter INPUT PIF file path+name:")
         inputName = input()
+        
+    return inputName()
 
-    #The master version of SliceStats will just use this predefined output file for easier use of this script.
+# This is everything except the file input so that I can loop over it.  
+def MultiSlice(SX=28):    
+    outputName = ""
+    inputName = ""
     outputName = "sliceData/sliceCoords.txt"
-    
+    FileOpen(1)
 
 
     scaleFactor = 8
@@ -95,10 +94,8 @@ def main(fileSelectOpt):
     #The starting and ending X-coordinates viable for a slice to be taken at.
     minX = centerX - diamRangeVar
     maxX = centerX + diamRangeVar
-    
-
-    print("\n>>Enter the x coordinate you'd like the slice to be taken at:")
-    sliceCoord = int(input())
+   
+    sliceCoord = SX
     
     
     #Stores all lines in input PIFF file that contain Wall data.
@@ -278,5 +275,5 @@ def main(fileSelectOpt):
     outStream2.write("\n-\n")
     outStream2.close()
     print("\n\nSliceStats_M is DONE.")
-#Calls the function main with "fileSelectOpt" selected to initate program.
-main(1)
+
+MultiSlice(28)
