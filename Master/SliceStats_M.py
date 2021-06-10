@@ -9,7 +9,7 @@ from tkinter.filedialog import askopenfilename
 #   Eastern Michigan University
 #   Backues Lab  
 #   Author: Payton Dunning
-#   Last Date Modified: May 3rd, 2021
+#   Last Date Modified: June10th, 2021
 #
 #   A script for analyzing the contents of an Autophagic Vacuole Simulation (AVS) project formatted 
 #   Compucell 3D (CC3D) simulation. The script takes in a PIF file (.piff), that must contain "Body" and
@@ -94,14 +94,14 @@ def main(fileSelectOpt):
     
     wallD = (wallRadius*2)
     
-    #The minimum vacuole diameter needed to perform the slice and analyze the body areas.
+    #The minimum vacuole radius needed to perform the slice and analyze the body areas.
     #Used to define the usable range of coordinates a slice can be taken at.
     #Essentially used as a threshold within to take slices.
     #Unscalled default is a 300nm minimum radius (600nm minimum diameter).
     #Used to be called recognition limit, but that is meant to be used for minimum body size.
-    unScalledVacMin = 600.0
+    unScalledVacMin = 300.0
     vacMin = (unScalledVacMin / scaleFactor)
-    print("Default slice recognition limit = %dunits" %(vacMin))
+    print("Default slice recognition limit (radius) = %dunits" %(vacMin))
     
     print(">>Would you like to use this default minimum vacuole slice threshold?[y/n]")
     minDInput = input()
@@ -115,7 +115,7 @@ def main(fileSelectOpt):
     wallRecDiff = (wallRadius**2)-(vacMin**2)
     diamRangeVar = 0
     
-    #(wallRadius**2)-(recogLimit**2) must be checked to be non-negative before attempted to find its square root.
+    #(wallRadius**2)-(vacMin**2) must be checked to be non-negative before attempted to find its square root.
     if(wallRecDiff > 0):
         diamRangeVar = math.sqrt(wallRecDiff)
         
@@ -257,21 +257,19 @@ def main(fileSelectOpt):
     #An array of arrays. Each sub array contains 2 things: "Body Num", "Max Area" for that body.
     bodyAreas = []
     #The minimum recognition limit for the sub-slices of the bodies. This is based on a 50nm limit
-    #for body radius givin by Dr.Backues. This translates to a minimum area of ~7854.
+    #for body radius givin by Dr.Backues. This translates to a minimum area of ~7854 (prescaling).
     #Area of circle = pi * r^2
-    #This default of 7854 is far too high of a threshold for most bodies. We'll have to rethink exactly
-    # what to use here. For now (5/27/2021) I'll change minBodyArea to something else...
+
     minBodyRadius = (50.0 / scaleFactor)
-    recogLimit = math.pi * (minBodyRadius**2)
-    print("Current recognition limit = %d" %(recogLimit))
-    
-    print(">>Would you like to use this default recognition limit? [y/n]")
+    print("Current minimum recognized body radius (scaled) = %d" %(minBodyRadius))
+    print(">>Would you like to use this default body recognition limit? [y/n]")
     bodyCheck = input()
     
     if(bodyCheck == "n" or bodyCheck == "N"):
-        print(">>Please enter a new minimum recognition limit with scaling factored in: ")
-        recogLimit = int(input())
-    
+        print(">>Please enter a new minimum recognized body radius with scaling factored in: ")
+        minBodyRadius = int(input())
+    recogLimit = math.pi * (minBodyRadius**2)
+           
     index1 = 0
     #The outer for loop iterates through each body.
     for array in lineCollection:
@@ -344,7 +342,7 @@ def main(fileSelectOpt):
             
             #date | time | bodyNum | area | perimeter | volume | model wall's radius
             #Perimeter Will be added later.
-            tableEntry = "%s | %d | %d(nm^2) | %d(nm^3) | %d(nm)\n" %(initialTime, result[0], result[1], currentVolume, wallRadius)
+            tableEntry = "%s , %d , %d , %d , %d \n" %(initialTime, result[0], result[1], currentVolume, wallRadius)
             outStream2.write(tableEntry) # Outputs each area value in the result array seperated by commas.
 
     else:

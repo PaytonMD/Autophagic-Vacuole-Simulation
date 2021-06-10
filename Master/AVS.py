@@ -1,4 +1,4 @@
-# -*- coding: utf-8 -*-
+1# -*- coding: utf-8 -*-
 import subprocess
 import time
 
@@ -16,7 +16,7 @@ from tkinter.filedialog import askopenfilename
 #   Eastern Michigan University
 #   Backues Lab  
 #   Author: Payton Dunning
-#   Last Date Modified: May 3rd, 2021
+#   Last Date Modified: June 9th, 2021
 #
 #   Master script for the Autophagic Vacuole Simulation project software pipeline. This script is used as the initial interface with
 #   users and is responsible for calling the other scripts in the pipeline and generally controlling the flow of information and
