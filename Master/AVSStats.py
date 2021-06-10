@@ -39,17 +39,17 @@ def main(fileSelectOpt):
     
     userSelection = input()
     if(userSelection == "1"):
-        findAverage()
+        findAverage(fileSelectOpt)
     elif(userSelection == "2"):
-        qqPlot()
+        qqPlot(fileSelectOpt)
     elif(userSelection == "3"):
-        ksTest()
+        ksTest(fileSelectOpt)
     elif(userSelection == "4"):
-        violinPlot()
+        violinPlot(fileSelectOpt)
     elif(userSelection == "0"):
         raise SystemExit
     
-def findAverage():
+def findAverage(fileSelectOpt):
     print(">>Select an option for file input:")
     print("[0]: Use default input file '../sliceData/sliceDefault.txt'")
     print("[1]: Use alternate input file.")
@@ -57,8 +57,14 @@ def findAverage():
     inputFile = "sliceData/sliceDefault.txt"
     
     if(userSelection == "1"):
-        print(">>Please enter alternate input file: ")
-        inputFile = input()
+        if(fileSelectOpt == True):
+            print(">>Select an alternative input file:")
+            print("(The file selection screen may appear BEHIND your current application)")
+            Tk().withdraw()
+            inputFile = askopenfilename()
+        else:
+            print(">>Please enter alternate input file name and path: ")
+            inputFile = input()
         
     numDataSets = 0 #Number of data sets read in from input file. Data sets are seperated by a -
     numOfBodies = 0
@@ -102,7 +108,7 @@ def findAverage():
     print("\nNumber of data sets used = %d" %(numDataSets))
     print("\nStandard Deviation of data set = %d" %(stdDev))
     
-def qqPlot():
+def qqPlot(fileSelectOpt):
     print("\nQQ")
     print(">>Select an option for file input:")
     print("[0]: Use default input file '../sliceData/sliceDefault.txt'")
@@ -112,8 +118,14 @@ def qqPlot():
     inputFile = "sliceData/sliceDefault.txt"
     
     if(userSelection == "1"):
-        print(">>Please enter alternate input file: ")
-        inputFile = input()
+        if(fileSelectOpt == True):
+            print(">>Select an alternative input file:")
+            print("(The file selection screen may appear BEHIND your current application)")
+            Tk().withdraw()
+            inputFile = askopenfilename()
+        else:
+            print(">>Please enter alternate input file name and path: ")
+            inputFile = input()
     
     bodyValueList = []
     
@@ -147,10 +159,10 @@ def qqPlot():
     plt.show()
 
 #END OF qqPlot
-def ksTest():
+def ksTest(fileSelectOpt):
     print("\nKS")
 
-def violinPlot():
+def violinPlot(fileSelectOpt):
     print(">>Select an option for file input:")
     print("[0]: Use default input file '../sliceData/sliceDefault.txt'")
     print("[1]: Use alternate input file.")
@@ -158,8 +170,14 @@ def violinPlot():
     inputFile = "sliceData/sliceDefault.txt"
     
     if(userSelection == "1"):
-        print(">>Please enter alternate input file: ")
-        inputFile = input()
+        if(fileSelectOpt == True):
+            print(">>Select an alternative input file:")
+            print("(The file selection screen may appear BEHIND your current application)")
+            Tk().withdraw()
+            inputFile = askopenfilename()
+        else:
+            print(">>Please enter alternate input file name and path: ")
+            inputFile = input()
         
     bodyValueList = []
     

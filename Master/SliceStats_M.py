@@ -2,6 +2,7 @@
 import sys
 import random
 import math
+import time
 from tkinter import Tk
 from tkinter.filedialog import askopenfilename
 ############################################################################################################
@@ -36,13 +37,18 @@ paramsFile = "attributes/Model_Parameters.txt"
 #I realize it's unnecessary to have everything in this single function, but it'll be split up at some point.
 #cycleRun is a boolean variable. It is false when SliceStats is run alone, and true when run as part of the AVS cycle.
 def main(fileSelectOpt):
+    
+    #For a given run of SliceStats_M, all body measurment output lines to the output
+    #file will have the same date and time stamp.
+    initialTime = time.asctime(time.localtime(time.time()))
+    
     print("Now running Master\SliceStats_M.py")
     outputName = ""
     inputName = ""
     
     if(fileSelectOpt):
         print("Please Select file...")
-        #inputName = r""
+        print("(The file selection screen may appear BEHIND your current application)")
         Tk().withdraw()
         filename = askopenfilename()
         inputName = filename
@@ -73,7 +79,7 @@ def main(fileSelectOpt):
     
     if(paramSelect == "n"):
         print(">>Please enter new values for parameters:\n")
-        print("(Wall radius and slice recognition limit parameter values should be post-scaling values)")
+        print("(The Wall radius parameter value should be a post-scaling value)")
         
         print("\n>>Enter new scaling factor: ")
         scaleFactor = int(input())
@@ -93,7 +99,7 @@ def main(fileSelectOpt):
     #Essentially used as a threshold within to take slices.
     #Unscalled default is a 300nm minimum radius (600nm minimum diameter).
     #Used to be called recognition limit, but that is meant to be used for minimum body size.
-    unScalledVacMin = 600
+    unScalledVacMin = 600.0
     vacMin = (unScalledVacMin / scaleFactor)
     print("Default slice recognition limit = %dunits" %(vacMin))
     
@@ -145,11 +151,29 @@ def main(fileSelectOpt):
     wallText = []
     #Stores all lines in input PIFF file that contain Body data.
     bodyText = []
+    
+    #Keeps track of the entire volume of every body in the piff file, not just ones that make it into a slice.
+    bodyWholeVol = []
+    bodyTotalVolumeNums = []
         
     inStream = open(inputName, "r")
     #Fills wallText and bodyText with relevent data from the input file.
     for line in inStream:
         data = line.split()
+
+        bodyID = int(data[0])
+        
+        idCheck = bodyID in bodyTotalVolumeNums
+        
+        if(len(bodyTotalVolumeNums) > 0 and (idCheck == True)):
+            #print("check")
+            index = bodyTotalVolumeNums.index(bodyID)
+            bodyWholeVol[index] += 1
+            
+        else:
+            bodyTotalVolumeNums.append(bodyID)
+            bodyWholeVol.append(1)
+            #print("check2")
 
         if(data[1] == "Wall"):
             wallText.append(line)
@@ -161,20 +185,21 @@ def main(fileSelectOpt):
     
         
     print("\n\n\t minX = %d || maxX = %d \n" %(minX, maxX))
-        
-    #Randomly select a x value within our minX~maxX range, that is the center point of our slice.
+
     '''The slice can then be (BLANK) units thick, with blank being the difference between the inputted diameter of the wall
             and the minimum diameter size. For sphereCoords xRange would be 5, so 2 higher and 2 lower than the chosen x Value.
             The funcitionality of the main slice being taken at a randomly selected X value within the valid range will '''
         
     '''A list of the bodies that make it into the slice. So if only bodies #1, #3, and #4 make it into the slice,
             bodyNum will have "1", "3", and "4", as elements. '''
-    bodyNums = []
-        
+    bodySliceNums = []
+
     '''A list that keeps a count of the number of points for each body that fall within the slice. So if bodies 1,3, and 4,
             make it into the slice, and #1 has 55 points within the slice, #3 has 70 points, and #4 has 102 points, 
             bodyVolCounts should be [55, 70, 102]. This effectively keeps track of the volumes of each body's slice.'''
-    bodyVolCounts = []
+    bodySliceVolCounts = []
+    
+    
         
     #A list of lists. Each sub-list contains all of the lines associated with a body.
     lineCollection = []
@@ -195,19 +220,19 @@ def main(fileSelectOpt):
         xValue = int(bodyLine[2])
         
         if(xValue <= (sliceCoord+2) and xValue >= (sliceCoord-2)):
-            bodyID = bodyLine[0]
+            bodyID = int(bodyLine[0])
             
             try:
-                index = bodyNums.index(bodyID)
-                bodyVolCounts[index] += 1
+                index = bodySliceNums.index(bodyID)
+                bodySliceVolCounts[index] += 1
                 #print(lineCollection)
                 
             except:
-                bodyNums.append(bodyID)
+                bodySliceNums.append(bodyID)
                 lineCollection.append([])
-                bodyVolCounts.append(1)
+                bodySliceVolCounts.append(1)
                 
-            posi = bodyNums.index(bodyID)
+            posi = bodySliceNums.index(bodyID)
             lineCollection[posi].append(bodyEntry)
             
     index1 = 0
@@ -221,10 +246,6 @@ def main(fileSelectOpt):
             index2 += 1
         index1 += 1
     outStream.close()
-    
-    #Print the Contents of bodyNums and bodyVolCounts (Test Code):
-    #for i in range(len(bodyNums)):
-    #   print("\tBody #%s volume = %d" %(bodyNums[i], bodyVolCounts[i]))
     
     '''The following loops iterate through the main slice, contained in lineCollection. Each body, contained in
         each sub-list, is individually analyzed to determine the largest single unit thick sub-slice for that body.
@@ -258,13 +279,13 @@ def main(fileSelectOpt):
         index2 = 0
         currentArea = 0
         lineData = lineCollection[index1][index2].split()
-        currentBody = lineData[0]
+        currentBody = int(lineData[0])
         currentX = lineData[2]
         
         #This inner loop iterates through the lines for the current body.
         for line in lineCollection[index1]:
             lineData = lineCollection[index1][index2].split()
-            nextBody = lineData[0]
+            nextBody = int(lineData[0])
             nextX = lineData[2]
             index2 += 1
 
@@ -302,27 +323,37 @@ def main(fileSelectOpt):
     
     #Check Initial Area Data and print:
     for result in bodyAreas:
-        print("\nUnmodified Body Data:")
-        stringPrintResult = "[%d, %d]" %(int(result[0]), result[1])
+        print("\nUNmodified Body Data:")
+        stringPrintResult = "[%d, %d]" %(result[0], result[1])
         print(stringPrintResult)
     
     if(scaleFactor!=1):
+        #TO-DO: Merge the following two for loops, no point in having them seperate.
         for result in bodyAreas:
             #stringPrintResult = "[%d, %d]" %(int(result[0]), result[1])
             scaledResult = result[1] * scaleFactor
-            reScaledAreas.append(scaledResult)
+            reScaledAreas.append([result[0], scaledResult])
         
         for result in reScaledAreas:
-            print("%d\n" %(result))
-            outStream2.write("%d," %(result)) # Outputs each area value in the result array seperated by commas.
+            print("\nModified Body Data:")
+            stringPrintResult = "[%d, %d]" %(result[0], result[1])
+            print(stringPrintResult)
+            
+            volIndex = bodyTotalVolumeNums.index(result[0])
+            currentVolume = bodyWholeVol[volIndex]
+            
+            #date | time | bodyNum | area | perimeter | volume | model wall's radius
+            #Perimeter Will be added later.
+            tableEntry = "%s | %d | %d(nm^2) | %d(nm^3) | %d(nm)\n" %(initialTime, result[0], result[1], currentVolume, wallRadius)
+            outStream2.write(tableEntry) # Outputs each area value in the result array seperated by commas.
 
     else:
         for result in bodyAreas:
-            stringPrintResult = "[%d, %d]" %(int(result[0]), result[1])
+            stringPrintResult = "[%d, %d]" %(result[0], result[1])
             print(stringPrintResult)
             outStream2.write("%d," %(result[1])) # Outputs each area value in the result array seperated by commas.
         
-    outStream2.write("\n-\n")
+    outStream2.write("---")
     outStream2.close()
     print("\n\nSliceStats_M is DONE.")
 #Calls the function main to initate program.

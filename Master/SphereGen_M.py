@@ -40,14 +40,20 @@ fileOutput = "" #Name of output file.
 def main(alone, fileSelectOpt):
     print("Now running Master\SphereGen_M.py")
     
+    
     #Connects the following fileOutput to the global fileOutput variable.
     global fileOutput
     
-    print("\n>>Enter OUTPUT PIF file path and name:", end='')
-    fileOutput = input()
+    if(fileSelectOpt == True):
+        print(">>Select the OUTPUT PIF file you'd like to use:")
+        Tk().withdraw()
+        fileOutput = askopenfilename()
+    else:
+        print("\n>>Enter OUTPUT PIF file path and name:", end='')
+        fileOutput = input()
     
     if(not alone):
-        useFile(alone)
+        useFile(alone, fileSelectOpt)
     else:
         #Asks if input will be from console or from file:
         print ("\n>>Input method selection: \n\t[0 for file input]\n\t[1 for console input]", end='')
@@ -63,14 +69,20 @@ def main(alone, fileSelectOpt):
 ###END OF main FUNCTION###
         
 '''Handles reading sphere data from text file and converts it to CC3D PIFF coordinates.'''
-def useFile(alone):
+def useFile(alone, fileSelectOpt):
     #If the inputAdjustment + SphereGen_M option was selected in Master (alone == False),
     #use the default input file sphereData.
     if(not alone):
         fileInput = "sphereData.txt"
     else:
-        print("\n>>Enter INPUT file path and name:", end='')
-        fileInput = input()
+        if(fileSelectOpt == True):
+            print(">>Select the INPUT sphere data file you'd like to use:")
+            print("(The file selection screen may appear BEHIND your current application)")
+            Tk().withdraw()
+            fileInput = askopenfilename()
+        else:
+            print("\n>>Enter INPUT sphere data file path and name:", end='')
+            fileInput = input()
     
     inStream = open(fileInput, "r")
     #List of all lines from the given input file.
@@ -155,7 +167,7 @@ def useConsole():
     
     for sphere in sphereList:
         sphereData = sphere.split()
-        print("Body #%d: %s %s %s %s" %(bodyNum, sphereData[0], sphereData[1], sphereData[2], sphereData[3]))
+        print("Modeling Body #%d: %s %s %s %s" %(bodyNum, sphereData[0], sphereData[1], sphereData[2], sphereData[3]))
         centerPoint = [float(sphereData[1]), float(sphereData[2]), float(sphereData[3])]
         radius = int(sphereData[0])
         dim = (radius*2)+1
@@ -181,7 +193,7 @@ def buildWall(wallData, bodyCount):
     #Build default wall
     #print("\nWall Data: %s" %(wallData))
     sphereData = wallData.split()
-    print("Wall: %s %s %s %s" %(sphereData[0], sphereData[1], sphereData[2], sphereData[3]))
+    print("Modeling Wall: %s %s %s %s" %(sphereData[0], sphereData[1], sphereData[2], sphereData[3]))
     radii = int(sphereData[0])
     xCenter = int(sphereData[1])
     yCenter = int(sphereData[2])

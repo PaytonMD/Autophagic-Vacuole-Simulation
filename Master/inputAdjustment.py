@@ -41,6 +41,7 @@ def main(fileSelectOpt):
     fileInput = ""
     if(fileSelectOpt == True):
         print(">>Select the sphere data file you'd like to use:")
+        print("(The file selection screen may appear BEHIND your current application)")
         Tk().withdraw()
         fileInput = askopenfilename()
     else:
@@ -193,14 +194,11 @@ def scaleDown(moreData, factor):
     return(newData)
 ###END OF scaleDown###
 
-def updateParams(factor, wallDiam, wallX):
+def updateParams(factor, wallRadius, wallX):
     print("\nUpdating AVS Model Parameters...\n")
     paramsStream = open(paramsFile, "w")
     paramsStream.write("Scale_Factor: %d\n" %(factor))
-    paramsStream.write("Wall_Diameter: %d\n" %(wallDiam))
+    paramsStream.write("Wall_Radius: %d\n" %(wallRadius))
     paramsStream.write("Wall_X_Coordinate: %d\n" %(wallX))
     
     paramsStream.close()
-    
-#This will automatically run this file if imported:
-#main()

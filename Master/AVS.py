@@ -1,5 +1,4 @@
 # -*- coding: utf-8 -*-
-
 import subprocess
 import time
 
@@ -65,7 +64,8 @@ def main():
         print("\t[8]: Run AVSStats Alone")
         print("\t[9]: Run inputAdjustment + SphereGen")
         print("\t[10]: Run Condenser Utility Script")
-        print("\t[11]: Read the readme file (COMING SOON)")
+        print("\t[11]: Update your Model_Parameters file with new parameters.")
+        print("\t[12]: Read the readme file (COMING SOON)")
         print("\t[0]: Exit AVS")
         
         scriptChoice = input()
@@ -95,6 +95,8 @@ def main():
         elif(scriptChoice == "10"):
             optionTen(explorerEnabled)
         elif(scriptChoice == "11"):
+            optionEleven()
+        elif(scriptChoice == "12"):
             optionEleven()
         else:
             print("---Invalid Input, please select from options 0~11---")
@@ -184,15 +186,15 @@ def optionSix(fileSelectOpt):
     #CC3D Model File Path+Name: cc3dModel = r"C:\\Users\\Temp\\Desktop\\AVS\\Master\\AVS_Model\\AVS_Model.cc3d"
     
     print("\n\t---Compucell3D Simulation Start (Can take seconds to hours depending on model used.)---")
-    startTime = (time.time()*1000) # in milliseconds
+    startTime = (time.time()*1000.0) # in milliseconds
     
     subprocess.run([batFile, "-i", cc3dModelFile])
     
-    endTime = (time.time()*1000) # in milliseconds
+    endTime = (time.time()*1000.0) # in milliseconds
     print("\n\t---Compucell3D Simulation Finished---")
     
     
-    totalTime = (endTime - startTime)/1000 #In seconds
+    totalTime = (endTime - startTime)/1000.0 #In seconds
     print("\t---CC3D Model Runtime: ~ %d seconds---" %(totalTime))
     
     print("---Option Six Complete---")
@@ -200,7 +202,7 @@ def optionSix(fileSelectOpt):
 #[7]: Run SliceStats Alone
 def optionSeven(fileSelectOpt):
     print("---Option Seven Selected---")
-    SliceStats_M.main(True, fileSelectOpt)
+    SliceStats_M.main(fileSelectOpt)
     print("---Option Seven Complete---")
     
 #[8] Run AVSStats Alone
@@ -222,10 +224,33 @@ def optionTen(fileSelectOpt):
     Condenser_M.main(fileSelectOpt)
     print("---Option Ten Complete---")
 
-#[11] Read the readme file (COMING SOON)
+#[11] Update model parameters in 'Model_Parameters.txt'
 def optionEleven():
-    print("---Option Eleven Selected---")
+    print(">>Please enter new values for parameters:\n")
+    print("(The Wall radius parameter value should be a post-scaling value)")
+        
+    print("\n>>Enter new scaling factor: ")
+    scaleFactor = int(input())
+        
+    #The known Radius of the simulation's Wall sphere.
+    print("\n>>Enter the given wall's radius", end='')
+    wallRadius = int(input())
+        
+    #The X value representing the X-coordinate of the Wall sphere's center.
+    print("\n>>Enter the given wall's central x-coordinate:", end='')
+    centerX = int(input()) 
+    
+    print("\nUpdating AVS Model Parameters...\n")
+    paramsStream = open(paramsFile, "w")
+    paramsStream.write("Scale_Factor: %d\n" %(scaleFactor))
+    paramsStream.write("Wall_Radius: %d\n" %(wallRadius))
+    paramsStream.write("Wall_X_Coordinate: %d\n" %(centerX))
+    
+    paramsStream.close()
+    
+#[12] Read the readme file (COMING SOON)
+def optionTwelve():
+    print("---Option Twelve Selected---")
     print("README is not yet available. Sorry :( ")
-    print("---Option Eleven Complete---")
-
+    print("---Option Twelve Complete---")
 main()
