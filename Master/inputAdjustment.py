@@ -113,9 +113,14 @@ def main(fileSelectOpt):
     maxZ = 0
     
     print("\nFinal Coordinates:")
+    outStream = open(fileOutput, "w")
+    
     #Prints the newly modified sphere data and determines actual values for maxX, maxY, and maxZ.
     for sphere in shiftedData:
         print(sphere)
+        outLine = str(sphere[0]) + " " + str(sphere[1]) + " " + str(sphere[2]) + " " + str(sphere[3]) + "\n"
+        outStream.write(outLine)
+        
         #The temp values use the sphere's radius, sphere[0].
         tempX = sphere[1] + sphere[0]
         tempY = sphere[2] + sphere[0]
@@ -128,15 +133,7 @@ def main(fileSelectOpt):
             maxY = tempY
     
         if(tempZ > maxZ):
-            maxZ = tempZ
-
-    #Output to default file for now:
-    #TO-DO: Combine the above and below for loops!
-    outStream = open(fileOutput, "w")
-    for sphere in shiftedData:
-        #print(sphere)
-        outLine = str(sphere[0]) + " " + str(sphere[1]) + " " + str(sphere[2]) + " " + str(sphere[3]) + "\n"
-        outStream.write(outLine)
+            maxZ = tempZ      
         
     print("\nThe Lattice will need to be at least %d x %d x %d (X x Y x Z) in size." %(maxX, maxY, maxZ))
     wallRadius = int(shiftedData[0][0])
