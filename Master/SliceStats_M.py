@@ -207,6 +207,9 @@ def main(fileSelectOpt):
     print("\nPIFF coordinates of the slice will be written to Master\sliceData\sliceCoords.txt")
     print("\nSlice measurment data will be written to Master\sliceData\sliceDefault.txt")
     
+    # Changes the thickness of the slice depending on the scale.  The unscaled thickness of the slice should be 70nm,  typical thickness for a TEM section
+    sliceThickness = 70 / scaleFactor
+    HalfSliceThickness = round((sliceThickness - 1)/2)
     '''The lines within bodyText are parsed through and sorted into the list of lists, lineCollection.
         As the lines within the given piff file can be out of order, as in all the lines for the bodies and wall
         can be mixed around and in a non-linear order, all the lines for each body, that fall within
@@ -218,7 +221,7 @@ def main(fileSelectOpt):
         bodyLine = bodyEntry.split()
         xValue = int(bodyLine[2])
         
-        if(xValue <= (sliceCoord+2) and xValue >= (sliceCoord-2)):
+        if(xValue <= (sliceCoord+HalfSliceThickness) and xValue >= (sliceCoord-HalfSliceThickness)):
             bodyID = int(bodyLine[0])
             
             try:
