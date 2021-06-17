@@ -34,7 +34,6 @@ from tkinter.filedialog import askopenfilename
 #paramsFile is used to keep track of several variables used by multiple scipts.
 paramsFile = "attributes/Model_Parameters.txt"
 
-#I realize it's unnecessary to have everything in this single function, but it'll be split up at some point.
 #cycleRun is a boolean variable. It is false when SliceStats is run alone, and true when run as part of the AVS cycle.
 def main(fileSelectOpt):
     
@@ -314,10 +313,6 @@ def main(fileSelectOpt):
     outStream2 = open("sliceData/sliceDefault.txt", "a+")
     
     print("[\"Body Number\", \"Max Area\"]:")
-
-    # For easier data parsing I'll change body output to just the measured body area seperated by commas.
-    #Each data set will be seperated by a dashed line.
-    reScaledAreas = []
     
     #Check Initial Area Data and print:
     for result in bodyAreas:
@@ -328,21 +323,18 @@ def main(fileSelectOpt):
     if(scaleFactor!=1):
         #TO-DO: Merge the following two for loops, no point in having them seperate.
         for result in bodyAreas:
-            #stringPrintResult = "[%d, %d]" %(int(result[0]), result[1])
             scaledResult = result[1] * scaleFactor
-            reScaledAreas.append([result[0], scaledResult])
-        
-        for result in reScaledAreas:
+            stringPrintResult = "[%d, %d]" %(result[0], scaledResult)
+            
             print("\nModified Body Data:")
-            stringPrintResult = "[%d, %d]" %(result[0], result[1])
             print(stringPrintResult)
             
             volIndex = bodyTotalVolumeNums.index(result[0])
             currentVolume = bodyWholeVol[volIndex]
             
-            #date | time | bodyNum | area | perimeter | volume | model wall's radius
+            #date&time , bodyNum , area , perimeter , volume , model wall's radius
             #Perimeter Will be added later.
-            tableEntry = "%s , %d , %d , %d , %d \n" %(initialTime, result[0], result[1], currentVolume, wallRadius)
+            tableEntry = "%s , %d , %d , %d , %d \n" %(initialTime, result[0], scaledResult, currentVolume, wallRadius)
             outStream2.write(tableEntry) # Outputs each area value in the result array seperated by commas.
 
     else:

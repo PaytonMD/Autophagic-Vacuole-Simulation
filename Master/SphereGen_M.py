@@ -144,8 +144,6 @@ def useConsole():
     #wallData will be used if a wall is built. Stores the first line from input file while other bodies are being built.
     wallData = "x"
     
-    
-    
     #If a wall is to be built, take first sphere entry to use for wall.
     if(wallCheck):
         print(">>Enter in sphere data to be used for a vacuole wall: ")
