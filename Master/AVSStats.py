@@ -65,47 +65,39 @@ def findAverage(fileSelectOpt):
         else:
             print(">>Please enter alternate input file name and path: ")
             inputFile = input()
-        
-    numDataSets = 0 #Number of data sets read in from input file. Data sets are seperated by a -
-    numOfBodies = 0
+
+    bodyCount = 0
     areaAverage = 0
-    areaMean = 0
-    areaTotal = 0
-    bodyValueArray = []
+    areaSum = 0
+    bodyAreaArray = []
     largestArea = -1
     smallestArea = 1000000 #Should find a more systematic max value to use.
     
-    inStream = open(inputFile, "r")
-    inStreamLines = inStream.readlines()
+    data = pullData(inputFile)
+    dataLength = len(data)
     
-    for line in inStreamLines:
-        blackLine = line.strip() #current line with whitespace removed.
-        if(blackLine == "-"):
-            numDataSets += 1
-        else:
-            bodyAreas = blackLine.split(",")
-            for value in bodyAreas:
-                if(value == ""):
-                    break;
-                #print("\n%s" %(value))
-                numValue = int(value)
-                bodyValueArray.append(int(value))
-                areaTotal += numValue
-                numOfBodies += 1
-                
-                if(numValue < smallestArea):
-                    smallestArea = numValue
-                if(numValue > largestArea):
-                    largestArea = numValue
     
-    areaAverage = (float(areaTotal)) / (float(numOfBodies))
+    for index in range(1, dataLength):
+        currentBodyNum = data[index][1]
+        currentArea = int(data[index][2])
+        currentVolume = int(data[index][3])
+        
+        bodyAreaArray.append(currentArea)
+        areaSum += currentArea
+        bodyCount += 1
+        
+        if(currentArea < smallestArea):
+            smallestArea = currentArea
+        if(currentArea > largestArea):
+            largestArea = currentArea
+    
+    areaAverage = (float(areaSum)) / (float(bodyCount))
     #Finds SAMPLE standard deviation of body data.
-    stdDev = statistics.stdev(bodyValueArray)
+    stdDev = statistics.stdev(bodyAreaArray)
     
     print("\nAverage Body Slice Area = %d" %(areaAverage))
     print("\nLargest Body Slice Area = %d" %(largestArea))
     print("\nSmallest Body Slice Area = %d" %(smallestArea))
-    print("\nNumber of data sets used = %d" %(numDataSets))
     print("\nStandard Deviation of data set = %d" %(stdDev))
     
 def qqPlot(fileSelectOpt):
@@ -127,29 +119,20 @@ def qqPlot(fileSelectOpt):
             print(">>Please enter alternate input file name and path: ")
             inputFile = input()
     
-    bodyValueList = []
     
-    inStream = open(inputFile, "r")
-    inStreamLines = inStream.readlines()
+    data = pullData(inputFile)
+    dataLength = len(data)
+    bodyAreaArray = []
     
-    for line in inStreamLines:
-        blackLine = line.strip() #current line with whitespace removed.
-        if(blackLine == "-"):
-            print("Check")
-        else:
-            bodyAreas = blackLine.split(",")
-            for value in bodyAreas:
-                if(value == ""):
-                    break;
-                #print("\n%s" %(value))
-                numValue = int(value)
-                bodyValueList.append(int(value))
-          
-    inStream.close()
-    listSize = len(bodyValueList)
+    for index in range(1, dataLength):
+        currentBodyNum = data[index][1]
+        currentArea = int(data[index][2])
+        currentVolume = int(data[index][3])
+        
+        bodyAreaArray.append(currentArea)
     
-    aArray = np.array(bodyValueList)
-    bArray = np.random.normal(loc=8.0, scale=3.0, size=listSize)
+    aArray = np.array(bodyAreaArray)
+    bArray = np.random.normal(loc=8.0, scale=1.0, size=((dataLength-1)))
     
     #statsmodels.graphics.gofplots.qqplot_2samples(statsA, statsB, xlabel=None, ylabel=None)
     plotA = sm.ProbPlot(aArray)
@@ -179,35 +162,40 @@ def violinPlot(fileSelectOpt):
             print(">>Please enter alternate input file name and path: ")
             inputFile = input()
         
-    bodyValueList = []
+    data = pullData(inputFile)
+    dataLength = len(data)
+    bodyAreaArray = []
     
-    inStream = open(inputFile, "r")
-    inStreamLines = inStream.readlines()
-    
-    for line in inStreamLines:
-        blackLine = line.strip() #current line with whitespace removed.
-        #Change to if !="-": do stuff
-        if(blackLine == "-"):
-            print("Check")
-        else:
-            bodyAreas = blackLine.split(",")
-            for value in bodyAreas:
-                if(value == ""):
-                    break;
-                #print("\n%s" %(value))
-                numValue = int(value)
-                bodyValueList.append(int(value))
-          
-    inStream.close()
+    for index in range(1, dataLength):
+        currentBodyNum = data[index][1]
+        currentArea = int(data[index][2])
+        currentVolume = int(data[index][3])
+        
+        bodyAreaArray.append(currentArea)
     
     fig=plt.figure()
     ax = fig.add_subplot(111)
     #TEMPORARY secondary dataset for testing purposes:
     bodyList2 = [5075, 6001, 3275, 4500, 2309, 2399, 2680, 2900, 3800, 5765]
-    data = [bodyValueList, bodyList2]
+    data = [bodyAreaArray, bodyList2]
     
     sm.graphics.violinplot(data, ax=ax, labels=["Simulated Data", "Test Data"])
     
     ax.set_xlabel("Data Sets")
     ax.set_ylabel("Body Area (units)")
+    
+def pullData(dataFile):
+    inStream = open(dataFile, "r")
+    inStreamLines = inStream.readlines()
+    #An array of arrays, with each subarray containing a line of data from the input file.
+    dataArray = []
+    
+    for line in inStreamLines:
+        #dataLine = (line.split(",").strip())
+        dataLine = (line.strip()).split(",")
+        dataArray.append(dataLine)
+        
+    inStream.close()
+    return dataArray
+        
 #main()
