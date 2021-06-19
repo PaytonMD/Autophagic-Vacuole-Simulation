@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+import os
 import sys
 import random
 import math
@@ -310,7 +311,14 @@ def main(fileSelectOpt):
                     bodyAreas.append([currentBody, maxArea])
         index1 += 1
     
+    fileSize = os.path.getsize("sliceData/sliceDefault.txt")
+    
     outStream2 = open("sliceData/sliceDefault.txt", "a+")
+    
+    #Adds a header to the file if the file is empty (no data currently in the file).
+    if(fileSize <= 0):
+        fileHeader = "Date & Time, Body Number, Body Area(nm^2), Body Volume(nm^3), Wall Radius(nm)\n"
+        outStream2.write(fileHeader)
     
     print("[\"Body Number\", \"Max Area\"]:")
     
@@ -342,8 +350,7 @@ def main(fileSelectOpt):
             stringPrintResult = "[%d, %d]" %(result[0], result[1])
             print(stringPrintResult)
             outStream2.write("%d," %(result[1])) # Outputs each area value in the result array seperated by commas.
-        
-    outStream2.write("---")
+
     outStream2.close()
     print("\n\nSliceStats_M is DONE.")
 #Calls the function main to initate program.
