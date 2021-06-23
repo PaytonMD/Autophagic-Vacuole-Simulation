@@ -256,7 +256,7 @@ def main(fileSelectOpt):
         shadow it would cast if a light were shined straight through it.'''
 
     
-    #An array of arrays. Each sub array contains 2 things: "Body Num", "Max Area" for that body.
+
     bodyAreas = []
     #The minimum recognition limit for the sub-slices of the bodies. This is based on a 50nm limit
     #for body radius givin by Dr.Backues. This translates to a minimum area of ~7854 (prescaling).
@@ -289,8 +289,8 @@ def main(fileSelectOpt):
     for array in lineCollection:
         index2 = 0
         currentArea = 0
-        #print ("body array")
-        #print (array)
+        print ("body array")
+        print (array)
         projectionData = []
         projectionData.append(array[index2].split())
         #print ("initial projection data")
@@ -301,31 +301,29 @@ def main(fileSelectOpt):
             currentBody = int(lineData[0])
             print ("Current Body")
             print (currentBody)
-            print ("lineData")
-            print (lineData)
+            #print ("lineData")
+            #print (lineData)
             index3 = 0
             found = 0
-            print ("length of projection data")
-            print (len(projectionData))
             while index3 < len(projectionData) and found <1:
            
     
                 if lineData[4] == projectionData[index3][4] and lineData[6] == projectionData[index3][6]:   #checks if both x and y match
-                    print ("Found it the real way!")
+                    #print ("Found it the real way!")
                     found += 1
                     index3 += 1
                 elif index3 < len(projectionData):    
-                     print ("keep looking!")
+                     #print ("keep looking!")
                      index3 += 1 
                 else: 
                     print ("done looking - not there")
             if found <1:
                 projectionData.append(lineData)                
-                print ("not there - adding line")
+                #print ("not there - adding line")
             else:
                 print ("not adding a line because it is a duplicate")
-            print ("projectionData")
-            print (projectionData)
+            #print ("projectionData")
+            #print (projectionData)
             index2 += 1
         print("final projectionData")
         print (projectionData)
