@@ -273,57 +273,73 @@ def main(fileSelectOpt):
     recogLimit = math.pi * (minBodyRadius**2)
            
     index1 = 0
-    #The outer for loop iterates through each body.
+   #print ("lineCollection[index1]")
+   #print (lineCollection[index1])
+
+    '''We build up the projection by going through each line in the lineCollection, checking if it is already in the projection, and, 
+    if not, adding it.  The outer loop is for each line in lineCollection.
+    The inner loop goes through each line currently in the projectionData string and compares it to the current line from the lineCollection
+    If it finds a match with identical Y and Z coordiantes it sets "found" to 1 and stops looking.  
+    If it goes through the entire projectionData without finding a match, it also stops looking.
+    Then it checks why it stopped looking, and if it wasn because it didn't find it (found = 0), at adds that line to the projectionData 
+    Then it moves on to the next line from the lineCollection'''    
+    
+    # I will get rid of all the extraneous print statements on a later cleanup once this is for sure working
+
     for array in lineCollection:
-        maxArea = -1
         index2 = 0
         currentArea = 0
-        lineData = lineCollection[index1][index2].split()
-        currentBody = int(lineData[0])
-        currentX = lineData[2]
-        
-        #This inner loop iterates through the lines for the current body.
-        for line in lineCollection[index1]:
-            lineData = lineCollection[index1][index2].split()
-            nextBody = int(lineData[0])
-            nextX = lineData[2]
+        #print ("body array")
+        #print (array)
+        projectionData = []
+        projectionData.append(array[index2].split())
+        #print ("initial projection data")
+        #print (projectionData)
+        #lineData = lineCollection[index1][index2].split()
+        for line in array:
+            lineData = array[index2].split()
+            currentBody = int(lineData[0])
+            print ("Current Body")
+            print (currentBody)
+            print ("lineData")
+            print (lineData)
+            index3 = 0
+            found = 0
+            print ("length of projection data")
+            print (len(projectionData))
+            while index3 < len(projectionData) and found <1:
+           
+    
+                if lineData[4] == projectionData[index3][4] and lineData[6] == projectionData[index3][6]:   #checks if both x and y match
+                    print ("Found it the real way!")
+                    found += 1
+                    index3 += 1
+                elif index3 < len(projectionData):    
+                     print ("keep looking!")
+                     index3 += 1 
+                else: 
+                    print ("done looking - not there")
+            if found <1:
+                projectionData.append(lineData)                
+                print ("not there - adding line")
+            else:
+                print ("not adding a line because it is a duplicate")
+            print ("projectionData")
+            print (projectionData)
             index2 += 1
-
-
-            if( (currentBody == nextBody) and (currentX == nextX)):
-                currentArea += 1
-                
-                '''At the end of a sub-slice, determined by reaching a new set of lines with
-                a different x-value, check if the current slice should count as the largest
-                slice (maxArea) of the current body.'''
-            elif( (currentBody == nextBody) and (currentX != nextX)):
-                if(currentArea > maxArea):
-                    print("New X Check")
-                    maxArea = currentArea
-                    currentArea = 1
-                    currentX = nextX
-                    
-            '''End of the sublist has been reached. Check if any of the slices for the
-            current body meet the minimum area requirement. If so, record the body and it's area.'''
-            if(index2 >= (len(lineCollection[index1]))):
-                #print("End of Body Check")
-                if(currentArea > maxArea):
-                    maxArea = currentArea
-
-                if(maxArea >= recogLimit):
-                    bodyAreas.append([currentBody, maxArea])
+        print("final projectionData")
+        print (projectionData)
+        currentArea = len(projectionData)
+        if(currentArea >= recogLimit):
+            bodyAreas.append([currentBody, currentArea])
+        else:
+            print ("below recognition limit - discarded")
         index1 += 1
     
     outStream2 = open("sliceData/sliceDefault.txt", "a+")
     
-    print("[\"Body Number\", \"Max Area\"]:")
-    
-    #Check Initial Area Data and print:
-    for result in bodyAreas:
-        print("\nUNmodified Body Data:")
-        stringPrintResult = "[%d, %d]" %(result[0], result[1])
-        print(stringPrintResult)
-    
+    print("[\"Body Number\", \"Area\"]:")
+       
     if(scaleFactor!=1):
         #TO-DO: Merge the following two for loops, no point in having them seperate.
         for result in bodyAreas:
