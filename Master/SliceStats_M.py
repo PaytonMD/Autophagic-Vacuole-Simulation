@@ -250,11 +250,11 @@ def main(fileSelectOpt):
     outStream.close()
     
     '''The following loops iterate through the main slice, contained in lineCollection. Each body, contained in
-        each sub-list, is individually analyzed to determine the largest single unit thick sub-slice for that body.
-        As the main slice may be several units thick, some bodies may contain several of these sub-slices. The
-        largest sub-slice for each body, that meet the minimum area threshold, are recorded and outputted. Each body's
-        max area slice may be from different X-coordinate slices. All of these sub-slices will still fall within the
-        previously determined range of valid x-value ranges.'''
+        each sub-list, is individually analyzed to determine every yz pixel that it contains, regardless of which 
+        x coordinate it has (as long as the x coordinate was within the slice).  All of these yz pixels are 
+        collected together into a single list.  This essentially creates a projection of the body slice - the 
+        shadow it would cast if a light were shined straight through it.'''
+
     
     #An array of arrays. Each sub array contains 2 things: "Body Num", "Max Area" for that body.
     bodyAreas = []
@@ -289,18 +289,19 @@ def main(fileSelectOpt):
             nextX = lineData[2]
             index2 += 1
 
-            if( (currentBody == nextBody) and (currentX == nextX)):
-                currentArea += 1
+           #This is the code I need to replace
+            #if( (currentBody == nextBody) and (currentX == nextX)):
+             #   currentArea += 1
                 
-                '''At the end of a sub-slice, determined by reaching a new set of lines with
-                a different x-value, check if the current slice should count as the largest
-                slice (maxArea) of the current body.'''
-            elif( (currentBody == nextBody) and (currentX != nextX)):
-                if(currentArea > maxArea):
+              #  '''At the end of a sub-slice, determined by reaching a new set of lines with
+               # a different x-value, check if the current slice should count as the largest
+                #slice (maxArea) of the current body.'''
+            #elif( (currentBody == nextBody) and (currentX != nextX)):
+             #   if(currentArea > maxArea):
                     #print("New X Check")
-                    maxArea = currentArea
-                    currentArea = 1
-                    currentX = nextX
+               #     maxArea = currentArea
+                #    currentArea = 1
+                 #   currentX = nextX
                     
             '''End of the sublist has been reached. Check if any of the slices for the
             current body meet the minimum area requirement. If so, record the body and it's area.'''
