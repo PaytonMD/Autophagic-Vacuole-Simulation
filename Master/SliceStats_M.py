@@ -131,7 +131,7 @@ def main(fileSelectOpt, MassRunCheck):
     maxX = centerX + diamRangeVar
     
     if(MassRunCheck == True):
-        sliceCoord = centerX
+        sliceCoord = random.randint(minX, maxX)
     else:
         print(">>Finally, select an option for determining where a slice will be taken:")
         print("\t[0 for slice to be taken at centerX coordinate]")
