@@ -35,33 +35,40 @@ fileOutput = "sphereData.txt" #Name of output file.
 #paramsFile is used to keep track of several variables used by multiple scipts.
 paramsFile = "attributes/Model_Parameters.txt"
 
-def main(fileSelectOpt):
+def main(fileSelectOpt, massRunCheck, massRunData, scaleFactor):
     print("Now running Master\inputAdjustment.py")
-    
-    fileInput = ""
-    if(fileSelectOpt == True):
-        print(">>Select the sphere data file you'd like to use:")
-        print("(The file selection screen may appear BEHIND your current application)")
-        Tk().withdraw()
-        fileInput = askopenfilename()
-    else:
-        print("\n>>Enter INPUT file path and name:", end='')
-        fileInput = input()
-    
-    print("\n---All output will be written to 'sphereData.txt'---")
-    
-    #Read in all data from input file and store in ogData
     ogData = [] #og as in original
     
-    inStream = open(fileInput, "r")
-    #List of all lines from the given input file.
-    inStreamLines = inStream.readlines()
-    
-    #Grabs sphere data from input file and stores in ogData.
-    for line in inStreamLines:
-        ogSphere = line.split()
-        ogData.append(ogSphere)
-    inStream.close()
+    if(massRunCheck == True):
+        print("MASSRUN")
+        for line in massRunData:
+            ogDataEntry = [line[4], line[5], line[6], line[7]]
+            ogData.append(ogDataEntry)
+    else:    
+        fileInput = ""
+        if(fileSelectOpt == True):
+            print(">>Select the sphere data file you'd like to use:")
+            print("(The file selection screen may appear BEHIND your current application)")
+            Tk().withdraw()
+            fileInput = askopenfilename()
+        else:
+            print("\n>>Enter INPUT file path and name:", end='')
+            fileInput = input()
+        
+        print("\n---All output will be written to 'sphereData.txt'---")
+        
+        #Read in all data from input file and store in ogData
+        
+        
+        inStream = open(fileInput, "r")
+        #List of all lines from the given input file.
+        inStreamLines = inStream.readlines()
+        
+        #Grabs sphere data from input file and stores in ogData.
+        for line in inStreamLines:
+            ogSphere = line.split()
+            ogData.append(ogSphere)
+        inStream.close()
     
     print("Original Coordinates:")
     print("(Coordinates here are the sphere's radius, X-center, Y-center, and Z-center.)")
@@ -70,23 +77,25 @@ def main(fileSelectOpt):
     
     #An array of the x, y, and z coordinate shifts needed to be made to the scaled spheres.
     maxChanges = [0, 0, 0]
-    
-    print("\n>>>Would you like to scale down the coordinates [y/n]:")
-    
-    toScale = input()
-    scaledData = ogData
-    
-    if(toScale == "y" or toScale =="Y"):
-        print("\n>>>Enter Scaling Factor:")
-        #scaleFactor here being an integer that will be used to divide the values of all the spheres.
-        #A scaleFactor of 2 would cut the size of the spheres, and model, in half.
-        scaleFactor = int(input())
-        lastScaleFactor = scaleFactor
+    scaledData = []
+    #If -1 is passed into inputAdjustment for scaleFactor, then ask user what factor they'd like to use.
+    #If the scaleFactor passed in was not -1, use that scaleFactor for scaling
+    if(scaleFactor == -1):
+        print("\n>>>Would you like to scale down the coordinates [y/n]:")
         
-        scaledData = scaleDown(ogData, scaleFactor)
+        toScale = input()
+        scaledData = ogData
+        
+        if(toScale == "y" or toScale =="Y"):
+            print("\n>>>Enter Scaling Factor:")
+            #scaleFactor here being an integer that will be used to divide the values of all the spheres.
+            #A scaleFactor of 2 would cut the size of the spheres, and model, in half.
+            scaleFactor = int(input())            
+            scaledData = scaleDown(ogData, scaleFactor)
+        else:
+            scaleFactor = 1 #No scale factor was used.
     else:
-        lastScaleFactor = 1 #No scale factor was used.
-        
+        scaledData = scaleDown(ogData, scaleFactor)
     print("\nScaled Coordinates:")
     
     for sphere in scaledData:
@@ -180,12 +189,13 @@ def scaleDown(moreData, factor):
     newData = []
 
     for line in moreData:
-        newDiameter = (int(float(line[0]))) / factor
+        #print("moreData line: %s" %(line))
+        newRadius = (int(float(line[0]))) / factor
         newX = int(float(line[1])) / factor
         newY = int(float(line[2])) / factor
         newZ = int(float(line[3])) / factor
         
-        newLine = [newDiameter, newX, newY, newZ]
+        newLine = [newRadius, newX, newY, newZ]
         newData.append(newLine)
 
     return(newData)

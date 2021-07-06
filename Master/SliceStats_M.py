@@ -36,29 +36,31 @@ from tkinter.filedialog import askopenfilename
 paramsFile = "attributes/Model_Parameters.txt"
 
 #cycleRun is a boolean variable. It is false when SliceStats is run alone, and true when run as part of the AVS cycle.
-def main(fileSelectOpt):
+def main(fileSelectOpt, MassRunCheck):
     
     #For a given run of SliceStats_M, all body measurment output lines to the output
     #file will have the same date and time stamp.
     initialTime = time.asctime(time.localtime(time.time()))
     
     print("Now running Master\SliceStats_M.py")
-    outputName = ""
-    inputName = ""
-    
-    if(fileSelectOpt):
-        print("Please Select file...")
-        print("(The file selection screen may appear BEHIND your current application)")
-        Tk().withdraw()
-        filename = askopenfilename()
-        inputName = filename
-        print("Given File Name: %s" %(filename))
-    else: 
-        print(">>Enter INPUT PIF file path+name:")
-        inputName = input()
-
     #The master version of SliceStats will just use this predefined output file for easier use of this script.
     outputName = "sliceData/sliceCoords.txt"
+    
+    inputName = ""
+    
+    if(MassRunCheck == True):
+        inputName = "AVS_Model\Simulation\Model.piff"
+    else:
+        if(fileSelectOpt):
+            print("Please Select file...")
+            print("(The file selection screen may appear BEHIND your current application)")
+            Tk().withdraw()
+            filename = askopenfilename()
+            inputName = filename
+            print("Given File Name: %s" %(filename))
+        else: 
+            print(">>Enter INPUT PIF file path+name:")
+            inputName = input()
     
     print("Grabbing AVS Model Parameters...\n")
     modelParams = grabParams()
@@ -74,23 +76,24 @@ def main(fileSelectOpt):
     print("\tWall_Diameter: %d\n" %(wallRadius*2))
     print("\tWall_X_Coordinate: %d\n" %(centerX))
     
-    print(">>Would you like to use these parameters?[y/n]")
-    paramSelect = input()
-    
-    if(paramSelect == "n"):
-        print(">>Please enter new values for parameters:\n")
-        print("(The Wall radius parameter value should be a post-scaling value)")
+    if(MassRunCheck == False):
+        print(">>Would you like to use these parameters?[y/n]")
+        paramSelect = input()
         
-        print("\n>>Enter new scaling factor: ")
-        scaleFactor = int(input())
-        
-        #The known Diameter of the simulation's Wall sphere.
-        print("\n>>Enter the given wall's radius", end='')
-        wallRadius = int(input())
-        
-        #The X value representing the X-coordinate of the Wall sphere's center.
-        print("\n>>Enter the given wall's central x-coordinate:", end='')
-        centerX = int(input()) 
+        if(paramSelect == "n"):
+            print(">>Please enter new values for parameters:\n")
+            print("(The Wall radius parameter value should be a post-scaling value)")
+            
+            print("\n>>Enter new scaling factor: ")
+            scaleFactor = int(input())
+            
+            #The known Diameter of the simulation's Wall sphere.
+            print("\n>>Enter the given wall's radius", end='')
+            wallRadius = int(input())
+            
+            #The X value representing the X-coordinate of the Wall sphere's center.
+            print("\n>>Enter the given wall's central x-coordinate:", end='')
+            centerX = int(input()) 
     
     wallD = (wallRadius*2)
     
@@ -103,12 +106,13 @@ def main(fileSelectOpt):
     vacMin = (unScalledVacMin / scaleFactor)
     print("Default slice recognition limit (radius) = %dunits" %(vacMin))
     
-    print(">>Would you like to use this default minimum vacuole slice threshold?[y/n]")
-    minDInput = input()
-    
-    if(minDInput == "n" or minDInput == "N"):
-        print("\n>>Enter new minimum vacuole threshold (scaled): ")
-        vacMin = int(input())
+    if(MassRunCheck == False):
+        print(">>Would you like to use this default minimum vacuole slice threshold?[y/n]")
+        minDInput = input()
+        
+        if(minDInput == "n" or minDInput == "N"):
+            print("\n>>Enter new minimum vacuole threshold (scaled): ")
+            vacMin = int(input())
     
     #Useable range of x-coordinates for the main slice.
     #diamRangeVar = int((wallD - minDiam) / 2)
@@ -126,26 +130,28 @@ def main(fileSelectOpt):
     minX = centerX - diamRangeVar
     maxX = centerX + diamRangeVar
     
-    
-    print(">>Finally, select an option for determining where a slice will be taken:")
-    print("\t[0 for slice to be taken at centerX coordinate]")
-    print("\t[1 for slice to be taken at a randomly selected coordinate]")
-    print("\t[2 for slice to be taken at a user specified coordinate]")
-        
-    sliceChoice = int(input())
-    sliceCoord = 0
-    
-    if(sliceChoice == 0):
+    if(MassRunCheck == True):
         sliceCoord = centerX
-        
-    elif(sliceChoice == 1):
-        sliceCoord = random.randint(minX, maxX)
-        
-    elif(sliceChoice == 2):
-        print("\n>>Enter the x coordinate you'd like the slice to be taken at:")
-        sliceCoord = int(input())
     else:
-        sys.ext("\nInput was found to be invalid. Please enter in 0, 1, or 2 for your choice of slice selection method.")
+        print(">>Finally, select an option for determining where a slice will be taken:")
+        print("\t[0 for slice to be taken at centerX coordinate]")
+        print("\t[1 for slice to be taken at a randomly selected coordinate]")
+        print("\t[2 for slice to be taken at a user specified coordinate]")
+            
+        sliceChoice = int(input())
+        sliceCoord = 0
+        
+        if(sliceChoice == 0):
+            sliceCoord = centerX
+            
+        elif(sliceChoice == 1):
+            sliceCoord = random.randint(minX, maxX)
+            
+        elif(sliceChoice == 2):
+            print("\n>>Enter the x coordinate you'd like the slice to be taken at:")
+            sliceCoord = int(input())
+        else:
+            sys.ext("\nInput was found to be invalid. Please enter in 0, 1, or 2 for your choice of slice selection method.")
     
     #Stores all lines in input PIFF file that contain Wall data.
     wallText = []
@@ -262,12 +268,14 @@ def main(fileSelectOpt):
 
     minBodyRadius = (50.0 / scaleFactor)
     print("Current minimum recognized body radius (scaled) = %d" %(minBodyRadius))
-    print(">>Would you like to use this default body recognition limit? [y/n]")
-    bodyCheck = input()
     
-    if(bodyCheck == "n" or bodyCheck == "N"):
-        print(">>Please enter a new minimum recognized body radius with scaling factored in: ")
-        minBodyRadius = int(input())
+    if(MassRunCheck == False):
+        print(">>Would you like to use this default body recognition limit? [y/n]")
+        bodyCheck = input()
+        
+        if(bodyCheck == "n" or bodyCheck == "N"):
+            print(">>Please enter a new minimum recognized body radius with scaling factored in: ")
+            minBodyRadius = int(input())
     recogLimit = math.pi * (minBodyRadius**2)
            
     index1 = 0
