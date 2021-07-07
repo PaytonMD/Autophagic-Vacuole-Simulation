@@ -207,6 +207,7 @@ def optionSeven(fileSelectOpt):
     
 #[8] Run AVSStats Alone
 def optionEight(fileSelectOpt):
+y
     print("---Option Eight Selected---")
     AVSStats.main(fileSelectOpt)
     print("---Option Eight Complete---")

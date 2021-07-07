@@ -216,8 +216,8 @@ def main(fileSelectOpt):
         for array in lineCollection:
             index2 = 0
             currentArea = 0
-            #print ("body array")
-            #print (array)
+            print ("body array")
+            print (array)
             projectionData = []
             projectionData.append(array[index2].split())
             #print ("initial projection data")
@@ -226,8 +226,8 @@ def main(fileSelectOpt):
             for line in array:
                 lineData = array[index2].split()
                 currentBody = int(lineData[0])
-                #print ("Current Body")
-                #print (currentBody)
+                print ("Current Body")
+                print (currentBody)
                 #print ("lineData")
                 #print (lineData)
                 index3 = 0
@@ -252,8 +252,8 @@ def main(fileSelectOpt):
                 #print ("projectionData")
                 #print (projectionData)
                 index2 += 1
-            #print("final projectionData")
-            #print (projectionData)
+            print("final projectionData")
+            print (projectionData)
             currentArea = len(projectionData)
             if(currentArea >= recogLimit):
                 bodyAreas.append([currentBody, currentArea])
