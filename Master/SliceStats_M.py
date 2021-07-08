@@ -127,8 +127,13 @@ def main(fileSelectOpt, MassRunCheck):
         sys.exit("\n!!!This model does not support a vacuole slice threshold of %s" %(vacMin))
         
     #The starting and ending X-coordinates viable for a slice to be taken at.
-    minX = centerX - diamRangeVar
-    maxX = centerX + diamRangeVar
+    minX = int(centerX - diamRangeVar)
+    maxX = int(centerX + diamRangeVar)
+    
+    print("Min X Value = %d" %(minX))
+    print("Max X Value = %d" %(maxX))
+    
+    sliceCoord = 0
     
     if(MassRunCheck == True):
         sliceCoord = random.randint(minX, maxX)
@@ -139,7 +144,6 @@ def main(fileSelectOpt, MassRunCheck):
         print("\t[2 for slice to be taken at a user specified coordinate]")
             
         sliceChoice = int(input())
-        sliceCoord = 0
         
         if(sliceChoice == 0):
             sliceCoord = centerX
