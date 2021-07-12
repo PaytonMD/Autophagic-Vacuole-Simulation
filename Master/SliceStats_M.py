@@ -5,11 +5,14 @@ import math
 import time
 from tkinter import Tk
 from tkinter.filedialog import askopenfilename
+import numpy as np
+import pandas as pd
+from skimage import measure 
 ############################################################################################################
 #   Eastern Michigan University
 #   Backues Lab  
-#   Author: Payton Dunning
-#   Last Date Modified: June10th, 2021
+#   Author: Payton Dunning and Steven Backues
+#   Last Date Modified: July 12th, 2021
 #
 #   A script for analyzing the contents of an Autophagic Vacuole Simulation (AVS) project formatted 
 #   Compucell 3D (CC3D) simulation. The script takes in a PIF file (.piff), that must contain "Body" and
@@ -256,8 +259,10 @@ def main(fileSelectOpt):
         shadow it would cast if a light were shined straight through it.'''
 
     
-    #An array of arrays. Each sub array contains 2 things: "Body Num", "Max Area" for that body.
+
     bodyAreas = []
+    bodyPixels = []
+    bodyImages = []
     #The minimum recognition limit for the sub-slices of the bodies. This is based on a 50nm limit
     #for body radius givin by Dr.Backues. This translates to a minimum area of ~7854 (prescaling).
     #Area of circle = pi * r^2
@@ -273,84 +278,162 @@ def main(fileSelectOpt):
     recogLimit = math.pi * (minBodyRadius**2)
            
     index1 = 0
-    #The outer for loop iterates through each body.
+   #print ("lineCollection[index1]")
+   #print (lineCollection[index1])
+
+    '''We build up the projection by going through each line in the lineCollection, checking if it is already in the projection, and, 
+    if not, adding it.  The outer loop is for each line in lineCollection.
+    The inner loop goes through each line currently in the projectionData string and compares it to the current line from the lineCollection
+    If it finds a match with identical Y and Z coordiantes it sets "found" to 1 and stops looking.  
+    If it goes through the entire projectionData without finding a match, it also stops looking.
+    Then it checks why it stopped looking, and if it wasn because it didn't find it (found = 0), at adds that line to the projectionData 
+    Then it moves on to the next line from the lineCollection'''    
+    
+    
+    # I will get rid of all the extraneous print statements on a later cleanup once this is for sure working
+    
+    ArDim = 2*(wallRadius+1) # Dimension of the array will be just slightly larger than of the simulation, to make sure that no pixels are right on the edge (needed later)
+
+
+    overalldfsk = pd.DataFrame()
+
     for array in lineCollection:
-        maxArea = -1
         index2 = 0
         currentArea = 0
-        lineData = lineCollection[index1][index2].split()
-        currentBody = int(lineData[0])
-        currentX = lineData[2]
-        
-        #This inner loop iterates through the lines for the current body.
-        for line in lineCollection[index1]:
-            lineData = lineCollection[index1][index2].split()
-            nextBody = int(lineData[0])
-            nextX = lineData[2]
+        currentPixels = []
+        #print ("body array")
+        #print (array)
+        projectionData = []
+        projectionData.append(array[index2].split())  #gets ProjectionData started by adding the very first line
+        lineData = array[index2].split()
+        Pixels = [int(lineData[4]), int(lineData[6])] #list of the just the yz pixels, for making the binary image later
+        Shift = 1
+        shiftedPixels = [x + Shift for x in Pixels]   #So that no pixels are right on the edge, later
+        currentPixels.append(shiftedPixels) 
+        #print ("initial projection data")
+        #print (projectionData)
+        #lineData = lineCollection[index1][index2].split()
+        for line in array:
+            lineData = array[index2].split()
+            currentBody = int(lineData[0])
+            #print ("Current Body")
+            #print (currentBody)
+            #print ("lineData")
+            #print (lineData)
+            index3 = 0
+            found = 0
+            while index3 < len(projectionData) and found <1:
+              
+                if lineData[4] == projectionData[index3][4] and lineData[6] == projectionData[index3][6]:   #checks if both x and y match
+                    #print ("Found it the real way!")
+                    found += 1
+                    index3 += 1
+                elif index3 < len(projectionData):    
+                     #print ("keep looking!")
+                     index3 += 1 
+                #else: 
+                    #print ("done looking - not there")
+            if found <1:
+                projectionData.append(lineData)
+                Pixels = [int(lineData[4]), int(lineData[6])]  #list of the just the yz pixels, for making the binary image later
+                shiftedPixels = [x + Shift for x in Pixels]   #So that no pixels are right on the edge, later
+                currentPixels.append(shiftedPixels)    
+                #print ("not there - adding line")
+          #  else:
+          #      print ("not adding a line because it is a duplicate")
+            #print ("projectionData")
+            #print (projectionData)
             index2 += 1
-
-
-            if( (currentBody == nextBody) and (currentX == nextX)):
-                currentArea += 1
-                
-                '''At the end of a sub-slice, determined by reaching a new set of lines with
-                a different x-value, check if the current slice should count as the largest
-                slice (maxArea) of the current body.'''
-            elif( (currentBody == nextBody) and (currentX != nextX)):
-                if(currentArea > maxArea):
-                    print("New X Check")
-                    maxArea = currentArea
-                    currentArea = 1
-                    currentX = nextX
-                    
-            '''End of the sublist has been reached. Check if any of the slices for the
-            current body meet the minimum area requirement. If so, record the body and it's area.'''
-            if(index2 >= (len(lineCollection[index1]))):
-                #print("End of Body Check")
-                if(currentArea > maxArea):
-                    maxArea = currentArea
-
-                if(maxArea >= recogLimit):
-                    bodyAreas.append([currentBody, maxArea])
+        #print("final projectionData")
+        #print (projectionData)
+        currentArea = len(projectionData)
+        if(currentArea >= recogLimit):
+            bodyAreas.append([currentBody, currentArea])
+            '''Now to make the imageArray for each body - a Numpy array the size of the simulation, with "1's" at every pixel location, and "0's" 
+        everywhere there isn't a pixel'''
+            imageArray = np.zeros ((ArDim, ArDim), dtype=int)
+            for pix in currentPixels:
+                imageArray[pix[0],pix[1]] = 1
+            bodyImages.append(imageArray)
+            all_labels = measure.label(imageArray)
+            propertylist=['label', 'bbox', 'area', 'centroid', 'convex_area','eccentricity','euler_number','filled_area','major_axis_length','minor_axis_length','perimeter']
+            '''this will add all regions that it finds to the dataframe, even those with areas below the recognition limit. We will filter those out later.
+            It’s nice to have all of them recorded for filtering out later, so we can also do stats all at once on what gets filtered out.
+            Area and perimeter units are pixels, not nanometers (nm); we’ll translate numbers in the dataframe to nm all at once later.'''
+            if( np.sum(all_labels) > 0):
+                props2 = measure.regionprops_table(all_labels,properties=propertylist)
+                df_skimage = pd.DataFrame(props2)  
+                df_skimage['imgnum'] = currentBody
+                overalldfsk = overalldfsk.append(df_skimage,ignore_index=True)
         index1 += 1
-    
-    outStream2 = open("sliceData/sliceDefault.txt", "a+")
-    
-    print("[\"Body Number\", \"Max Area\"]:")
-    
-    #Check Initial Area Data and print:
-    for result in bodyAreas:
-        print("\nUNmodified Body Data:")
-        stringPrintResult = "[%d, %d]" %(result[0], result[1])
-        print(stringPrintResult)
-    
-    if(scaleFactor!=1):
-        #TO-DO: Merge the following two for loops, no point in having them seperate.
-        for result in bodyAreas:
-            scaledResult = result[1] * scaleFactor
-            stringPrintResult = "[%d, %d]" %(result[0], scaledResult)
-            
-            print("\nModified Body Data:")
-            print(stringPrintResult)
-            
-            volIndex = bodyTotalVolumeNums.index(result[0])
-            currentVolume = bodyWholeVol[volIndex]
-            
-            #date&time , bodyNum , area , perimeter , volume , model wall's radius
-            #Perimeter Will be added later.
-            tableEntry = "%s , %d , %d , %d , %d \n" %(initialTime, result[0], scaledResult, currentVolume, wallRadius)
-            outStream2.write(tableEntry) # Outputs each area value in the result array seperated by commas.
-
-    else:
-        for result in bodyAreas:
-            stringPrintResult = "[%d, %d]" %(result[0], result[1])
-            print(stringPrintResult)
-            outStream2.write("%d," %(result[1])) # Outputs each area value in the result array seperated by commas.
         
-    outStream2.write("---")
-    outStream2.close()
-    print("\n\nSliceStats_M is DONE.")
-#Calls the function main to initate program.
+    print(overalldfsk) 
+    """ Filtering out tiny regions."""
+    big_enough = overalldfsk['area'] >= recogLimit
+    too_small = np.invert(big_enough)
+    print(big_enough)
+    print(too_small)
+    # do the filtering:
+    overalldfsk_big_enough = overalldfsk[big_enough]
+    ''' Now that we've filtered out the too-small regions, let's look for APBs that had more than 1 big-enough region.
+We'll do what's called a "pivot table" in Excel. To quantify how spread-out the areas are for any bodynumber,
+ we'll use the statistical range (max-minus-min), which Python calls 'ptp'=peak-to-peak,
+We'll also take the StdDev, though that gives NaN when there's only 1 region for a bodynumber. 
+Any imagenum with count_area >= 2 has multiple regions in it (and they are not just tiny ones, since we filtered those out already)
+Then we'll rename those bodies with greater than one area with new numbers - a new body number for each area'''
+    pvt_df=overalldfsk_big_enough.pivot_table(values='area',index='imgnum',aggfunc=["count",np.mean,np.std,np.amax,np.ptp])
+    pvt_df.columns = list(map("_".join, pvt_df.columns)) #renames the columns with simpler names
+    print(pvt_df.columns)
+    print (pvt_df)  #this is a pandas dataframe
+    pvt_df_split = pvt_df[pvt_df['count_area'] >= 2] #subsetting just those bodies that are split in two
+    if (len(pvt_df_split) >= 1):
+        pvt_df_single =pvt_df[pvt_df['count_area'] < 2] #subsetting just those bodies that are whole
+        singles = pvt_df_single.index
+        splits = pvt_df_split.index
+        print (splits)
+        print (singles)
+        #now to rename the bodies that are split in parts, giving each part a new body number
+        new_bod_nums_req = len(pvt_df_split) # how many new body numbers we need
+        new_bod_nums = range(1000, 1001+new_bod_nums_req, 1)
+        #print (new_bod_nums)
+        overalldfsk_single = overalldfsk_big_enough[overalldfsk_big_enough["imgnum"].isin(singles)] # filters the original list by just the single bodies
+        #print (overalldfsk_single)
+        overalldfsk_splits = overalldfsk_big_enough[overalldfsk_big_enough["imgnum"].isin(splits)] # filters the original list by just the split bodies
+        #print (overalldfsk_splits)
+        overalldfsk_splits.loc[:,"imgnum"] = new_bod_nums  #giving the splits data frame the new body numbers
+        #print (overalldfsk_splits)
+        overalldfsk_new = overalldfsk_single.append(overalldfsk_splits) #this has the data on all of the bodies, with unique body numbers
+        print (overalldfsk_new)
+    else:
+        overalldfsk_new = overalldfsk_big_enough
+    
+    # Now to do some more calculations to get exactly the data I want, Aspect Ratio (AR) and Circularity 
+    overalldfsk_new["AR"]=overalldfsk_new["major_axis_length"] / overalldfsk_new["minor_axis_length"]  #Adds Aspect ratio column
+    overalldfsk_new["circularity"]= 4*math.pi*overalldfsk_new["area"] / (overalldfsk_new["perimeter"]**2)  #Adds circularity column
+    overalldfsk_new["time"] = initialTime
+    overalldfsk_new.rename(columns = {"imgnum":"body_number"}, inplace=True)
+    # Now need to export just what we want, in a nice format
+    finalOutput = overalldfsk_new[["time", "body_number", "area", "perimeter", "circularity", "AR"]]
+    print (finalOutput)
+    
+# Now I need to talk to Payton about this, to see what data he needs and how to output it to meet his standards
+    
+#    outStream2 = open("sliceData/sliceDefault.txt", "a+")
+    
+
+
+        
+#         volIndex = bodyTotalVolumeNums.index(result[0])
+#         currentVolume = bodyWholeVol[volIndex]
+        
+#         #date&time , bodyNum , area , perimeter , circularity, asepct ratio,  volume , model wall's radius
+#         tableEntry = "%s , %d , %d , %d , %d \n" %(initialTime, result[0], scaledResult, currentVolume, wallRadius)
+#         outStream2.write(tableEntry) # Outputs each area value in the result array seperated by commas.
+        
+#     outStream2.write("---")
+#     outStream2.close()
+#     print("\n\nSliceStats_M is DONE.")
+# #Calls the function main to initate program.
 
 def grabParams():
     params = []
@@ -363,5 +446,5 @@ def grabParams():
         params.append(int(splitLine[1].strip()))
         
     return params
-#This will automatically run this file if imported:
-#main()
+# #This will automatically run this file if imported:
+# #main()
