@@ -5,6 +5,7 @@ import math
 import time
 from tkinter import Tk
 from tkinter.filedialog import askopenfilename
+import numpy as np
 ############################################################################################################
 #   Eastern Michigan University
 #   Backues Lab  
@@ -258,6 +259,7 @@ def main(fileSelectOpt):
     
 
     bodyAreas = []
+    bodyPixels = []
     #The minimum recognition limit for the sub-slices of the bodies. This is based on a 50nm limit
     #for body radius givin by Dr.Backues. This translates to a minimum area of ~7854 (prescaling).
     #Area of circle = pi * r^2
@@ -289,8 +291,9 @@ def main(fileSelectOpt):
     for array in lineCollection:
         index2 = 0
         currentArea = 0
-        print ("body array")
-        print (array)
+        currentPixels = []
+        #print ("body array")
+        #print (array)
         projectionData = []
         projectionData.append(array[index2].split())
         #print ("initial projection data")
@@ -299,15 +302,14 @@ def main(fileSelectOpt):
         for line in array:
             lineData = array[index2].split()
             currentBody = int(lineData[0])
-            print ("Current Body")
-            print (currentBody)
+            #print ("Current Body")
+            #print (currentBody)
             #print ("lineData")
             #print (lineData)
             index3 = 0
             found = 0
             while index3 < len(projectionData) and found <1:
-           
-    
+              
                 if lineData[4] == projectionData[index3][4] and lineData[6] == projectionData[index3][6]:   #checks if both x and y match
                     #print ("Found it the real way!")
                     found += 1
@@ -315,18 +317,20 @@ def main(fileSelectOpt):
                 elif index3 < len(projectionData):    
                      #print ("keep looking!")
                      index3 += 1 
-                else: 
-                    print ("done looking - not there")
+                #else: 
+                    #print ("done looking - not there")
             if found <1:
-                projectionData.append(lineData)                
+                projectionData.append(lineData)
+                Pixels = [lineData[4], lineData[6]]
+                currentPixels.append[Pixels]    
                 #print ("not there - adding line")
-            else:
-                print ("not adding a line because it is a duplicate")
+          #  else:
+          #      print ("not adding a line because it is a duplicate")
             #print ("projectionData")
             #print (projectionData)
             index2 += 1
-        print("final projectionData")
-        print (projectionData)
+        #print("final projectionData")
+        #print (projectionData)
         currentArea = len(projectionData)
         if(currentArea >= recogLimit):
             bodyAreas.append([currentBody, currentArea])
@@ -338,28 +342,21 @@ def main(fileSelectOpt):
     
     print("[\"Body Number\", \"Area\"]:")
        
-    if(scaleFactor!=1):
-        #TO-DO: Merge the following two for loops, no point in having them seperate.
-        for result in bodyAreas:
-            scaledResult = result[1] * scaleFactor
-            stringPrintResult = "[%d, %d]" %(result[0], scaledResult)
-            
-            print("\nModified Body Data:")
-            print(stringPrintResult)
-            
-            volIndex = bodyTotalVolumeNums.index(result[0])
-            currentVolume = bodyWholeVol[volIndex]
-            
-            #date&time , bodyNum , area , perimeter , volume , model wall's radius
-            #Perimeter Will be added later.
-            tableEntry = "%s , %d , %d , %d , %d \n" %(initialTime, result[0], scaledResult, currentVolume, wallRadius)
-            outStream2.write(tableEntry) # Outputs each area value in the result array seperated by commas.
 
-    else:
-        for result in bodyAreas:
-            stringPrintResult = "[%d, %d]" %(result[0], result[1])
-            print(stringPrintResult)
-            outStream2.write("%d," %(result[1])) # Outputs each area value in the result array seperated by commas.
+    for result in bodyAreas:
+        scaledResult = result[1] * scaleFactor
+        stringPrintResult = "[%d, %d]" %(result[0], scaledResult)
+        
+        print("\nModified Body Data:")
+        print(stringPrintResult)
+        
+        volIndex = bodyTotalVolumeNums.index(result[0])
+        currentVolume = bodyWholeVol[volIndex]
+        
+        #date&time , bodyNum , area , perimeter , volume , model wall's radius
+        #Perimeter Will be added later.
+        tableEntry = "%s , %d , %d , %d , %d \n" %(initialTime, result[0], scaledResult, currentVolume, wallRadius)
+        outStream2.write(tableEntry) # Outputs each area value in the result array seperated by commas.
         
     outStream2.write("---")
     outStream2.close()
