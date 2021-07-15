@@ -4,7 +4,7 @@ import time
 
 import inputAdjustment
 import SphereGen_M
-import SliceStats_MProj_new
+import SliceStats_M
 import AVSStats
 import Condenser_M
 
@@ -202,7 +202,7 @@ def optionSix(fileSelectOpt):
 #[7]: Run SliceStats Alone
 def optionSeven(fileSelectOpt):
     print("---Option Seven Selected---")
-    SliceStats_MProj_new.main(fileSelectOpt)
+    SliceStats_M.main(fileSelectOpt)
     print("---Option Seven Complete---")
     
 #[8] Run AVSStats Alone

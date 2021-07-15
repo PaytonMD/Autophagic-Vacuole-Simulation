@@ -415,6 +415,10 @@ Then we'll rename those bodies with greater than one area with new numbers - a n
     # Now need to export just what we want, in a nice format
     finalOutput = overalldfsk_new[["time", "body_number", "area", "perimeter", "circularity", "AR"]]
     print (finalOutput)
+    finalOutput.to_csv ()  #finish this
+    
+    numpy_array = finalOutput.to_numpy()
+    np.savetxt("test_file.txt", numpy_array, fmt = "%d")
     
 # Now I need to talk to Payton about this, to see what data he needs and how to output it to meet his standards
     
