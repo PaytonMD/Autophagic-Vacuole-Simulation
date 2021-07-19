@@ -37,42 +37,44 @@ fileOutput = "" #Name of output file.
 '''Takes in console input to determine method of sphere data input (file vs console).
     alone is a boolean variable that is False when selecting the inputAdjustment + SphereGen
     option in the master AVS script.'''
-def main(alone, fileSelectOpt):
+def main(fileSelectOpt, massRunCheck):
     print("Now running Master\SphereGen_M.py")
     
     
     #Connects the following fileOutput to the global fileOutput variable.
     global fileOutput
     
-    if(fileSelectOpt == True):
-        print(">>Select the OUTPUT PIF file you'd like to use:")
-        Tk().withdraw()
-        fileOutput = askopenfilename()
+    if(massRunCheck == True):
+        #print("MassCheck")
+        fileOutput = "AVS_Model\Simulation\Model.piff"
+        useFile(massRunCheck, fileSelectOpt)
     else:
-        print("\n>>Enter OUTPUT PIF file path and name:", end='')
-        fileOutput = input()
+        if(fileSelectOpt == True):
+            print(">>Select the OUTPUT PIF file you'd like to use:")
+            Tk().withdraw()
+            fileOutput = askopenfilename()
+        else:
+            print("\n>>Enter OUTPUT PIF file path and name:", end='')
+            fileOutput = input()
     
-    if(not alone):
-        useFile(alone, fileSelectOpt)
-    else:
-        #Asks if input will be from console or from file:
-        print ("\n>>Input method selection: \n\t[0 for file input]\n\t[1 for console input]", end='')
-        inputType = int(input())     
-        
-        #Takes in file as input. Can be used for multiple spheres.
-        if(inputType == 0):
-            useFile(alone)
-        #Takes in manual input from console. Spheres are read in line by line.
-        elif(inputType == 1):
-            useConsole()
+            #Asks if input will be from console or from file:
+            print ("\n>>Input method selection: \n\t[0 for file input]\n\t[1 for console input]", end='')
+            inputType = int(input())     
+            
+            #Takes in file as input. Can be used for multiple spheres.
+            if(inputType == 0):
+                useFile(fileSelectOpt, massRunCheck)
+            #Takes in manual input from console. Spheres are read in line by line.
+            elif(inputType == 1):
+                useConsole()
    
 ###END OF main FUNCTION###
         
 '''Handles reading sphere data from text file and converts it to CC3D PIFF coordinates.'''
-def useFile(alone, fileSelectOpt):
-    #If the inputAdjustment + SphereGen_M option was selected in Master (alone == False),
+def useFile(fileSelectOpt, massRunCheck):
+    #If the inputAdjustment + SphereGen_M option was selected in Master (massRunCheck == True),
     #use the default input file sphereData.
-    if(not alone):
+    if(massRunCheck):
         fileInput = "sphereData.txt"
     else:
         if(fileSelectOpt == True):
@@ -87,11 +89,14 @@ def useFile(alone, fileSelectOpt):
     inStream = open(fileInput, "r")
     #List of all lines from the given input file.
     inStreamLines = inStream.readlines()
-    
-    print("\n>>Build an encapsulating membrane wall? [y/n]")
     wallCheck = False
-    if(input() == 'y'):
+    if(massRunCheck == True):
         wallCheck = True
+    else:
+        print("\n>>Build an encapsulating membrane wall? [y/n]")
+        wallCheck = False
+        if(input() == 'y'):
+            wallCheck = True
     
     #wallData will be used if a wall is built. Stores the first line from input file while other bodies are being built.
     wallData = "x"
