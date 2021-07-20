@@ -15,7 +15,7 @@ from tkinter.filedialog import askopenfilename
 #   Eastern Michigan University
 #   Backues Lab  
 #   Author: Payton Dunning
-#   Last Date Modified: June 9th, 2021
+#   Last Date Modified: July 20th, 2021
 #
 #   Master script for the Autophagic Vacuole Simulation project software pipeline. This script is used as the initial interface with
 #   users and is responsible for calling the other scripts in the pipeline and generally controlling the flow of information and
@@ -111,31 +111,18 @@ def optionOne(fileSelectOpt):
 def optionTwo(fileSelectOpt):
     print("---Option Two Selected---")
     
+    print("\n---Running CC3D requires the CC3D batch file 'runScript.bat',---")
+    print("---(The default installation site on Windows is 'C:\CompuCell3D-py3-64bit\'),---")
+    print("---As well as a .cc3d file and a .piff file to be selected.---")
     
-    print("What scale factor would you like to use for this mass run? (Please use whole numbers)")
-    massRunScaleFactor = int(input())
+    #[batFile, cc3dModelFile, piffFile, massRunScaleFactor]
+    userData = grabFilesFromUser(fileSelectOpt)
     
-    print("\n---Running CC3D requires the CC3D batch file 'runScript.bat'.---")
-    print("---(The default installation site on Windows is 'C:\CompuCell3D-py3-64bit\')---")
-    batFile = ""
-    cc3dModelFile = ""
-    if(fileSelectOpt == True):
-        print(">>Select your 'runScript.bat' file:")
-        print("(The file selection screen may appear BEHIND your current application)")
-        Tk().withdraw()
-        batFile = askopenfilename()
-        
-        print(">>Select your 'Model.cc3d' file:")
-        print("(The file selection screen may appear BEHIND your current application)")
-        Tk().withdraw()
-        cc3dModelFile = askopenfilename()
-    else:
-        print(">>Enter file path+name for your CC3D runScript.bat file:")
-        batFile = input()
+    batFile = userData[0]
+    cc3dModelFile = userData[1]
+    piffFile = userData[2]
+    massRunScaleFactor = int(userData[3])
     
-        print(">>Enter file path+name for your CC3D Model's .cc3d file:")
-        cc3dModelFile = input()
-        
         
     massInStream = open("spheregen_input_example.txt","r")
     
@@ -143,8 +130,11 @@ def optionTwo(fileSelectOpt):
     allData = massInStream.readlines()
     dataByRun = []
     dataListIndex = 0
-    
+    #Keeps track of how many bodies were originally in each run.
+    numBodiesPerRun = []
+    numBodiesCount = 0
     lastRun = 0
+    
     '''This for loop will iterate over all of the read in lines in allData
      and split them up into a series of sub-lists within dataByRun.
     Each sub-list in dataByRun is a list of lists containing the split up lines
@@ -157,14 +147,10 @@ def optionTwo(fileSelectOpt):
         
         if(len(splitLine) == 8):
             runNum = splitLine[0]
-            #test1 = "Test1: %s \n" %(splitLine[0])
-            #print(test1)
             
             if(lastRun == 0):
                 lastRun = runNum
-                #Adds an initial sub-list/array to the dataByRun list/array.
-                #Yes I know arrays and lists in python are technically different, but for now I'm referring
-                # to them interchangeably in comments.
+                #Adds an initial sub-list to the dataByRun list.
                 dataByRun.append([])
                 dataByRun[dataListIndex].append(splitLine)
                 
@@ -185,7 +171,7 @@ def optionTwo(fileSelectOpt):
         #print("\nRun Set Length: %d" %(len(runSet)))
         #Line coresponding to the first (zeroith) line of a run representing the vacuole wall.
         wallLine = runSet[0]
-        #print(wallLine)
+
         inputAdjustment.main(fileSelectOpt, True, runSet, massRunScaleFactor)
 
         SphereGen_M.main(fileSelectOpt, True)
@@ -205,6 +191,40 @@ def optionTwo(fileSelectOpt):
         
     print("---Option Two Complete---")
 
+def grabFilesFromUser(fileSelectOpt):
+    if(fileSelectOpt == True):
+        print(">>Select your 'runScript.bat' file:")
+        print("(The file selection screen may appear BEHIND your current application)")
+        Tk().withdraw()
+        batFile = askopenfilename()
+        
+        print(">>Select your 'Model.cc3d' file:")
+        print("(The file selection screen may appear BEHIND your current application)")
+        Tk().withdraw()
+        cc3dModelFile = askopenfilename()
+        
+        print(">>Select your 'Model.piff' file:")
+        print("(The file selection screen may appear BEHIND your current application)")
+        Tk().withdraw()
+        piffFile = askopenfilename()
+        
+    else:
+        print(">>Enter file path+name for your CC3D runScript.bat file:")
+        batFile = input()
+    
+        print(">>Enter file path+name for your CC3D Model's .cc3d file:")
+        cc3dModelFile = input()
+        
+        print("Enter file +ath+name for your CC3D .piff file:")
+        piffFile = input()
+        
+    print("What scale factor would you like to use for this mass run? (Please use whole numbers)")
+    massRunScaleFactor = int(input())
+    
+    return [batFile, cc3dModelFile, piffFile, massRunScaleFactor]
+###END OF grabFilesFromUser###
+    
+    
 #[3] Run GenBalls Alone (COMING SOON)
 def optionThree(fileSelectOpt):
     print("---Option Three Selected---")
@@ -264,11 +284,10 @@ def optionSix(fileSelectOpt):
     print("---(The default installation site on Windows is 'C:\CompuCell3D-py3-64bit\')---")
     print("---For both the CC3D batch and model files, please enter their FULL file paths!---\n")
     
-    print(">>Enter file path+name for your CC3D runScript.bat file:")
-    batFile = input()
-    
-    print(">>Enter file path+name for your CC3D Model's .cc3d file:")
-    cc3dModelFile = input()
+    userData = grabFilesFromUser(fileSelectOpt)
+
+    batFile = userData[0]
+    cc3dModelFile = userData[1]
     
     #Running CC3D this way require FULL FILE PATHS to the location of "runScript.bat" and the
     #   CC3D model you'd like to use.
