@@ -4,7 +4,7 @@ from tkinter.filedialog import askopenfilename
 
 ############################################################################################################
 #   Author: Payton Dunning
-#   Last Date Modified: May 3rd, 2021
+#   Last Date Modified: July 20th, 2021
 #
 #   Complimentary code for SphereGen.py. Takes in spherical data and makes 2 types of adjustments in order
 #   for the data to be compatible with SphereGen.py, CompuCell 3D, and other AVS project programs.
@@ -39,12 +39,23 @@ def main(fileSelectOpt, massRunCheck, massRunData, scaleFactor):
     print("Now running Master\inputAdjustment.py")
     ogData = [] #og as in original
     
+    '''A new input format for text files was configured by Dr. Backues. During mass runs only
+        the new format will be used, but otherwise users will select between using the old format
+        or the new format. Eventually the old format option will be removed entirely.'''
+    newInputFormat = True
+    
     if(massRunCheck == True):
         print("MASSRUN")
         for line in massRunData:
             ogDataEntry = [line[4], line[5], line[6], line[7]]
             ogData.append(ogDataEntry)
     else:    
+        print(">>Would you like to use the OLD input format?[y/n] (Select n if unsure).")
+        formatCheck = input()
+        
+        if(formatCheck == 'y' or formatCheck == 'Y'):
+            newInputFormat = False
+        
         fileInput = ""
         if(fileSelectOpt == True):
             print(">>Select the sphere data file you'd like to use:")
@@ -64,10 +75,17 @@ def main(fileSelectOpt, massRunCheck, massRunData, scaleFactor):
         #List of all lines from the given input file.
         inStreamLines = inStream.readlines()
         
-        #Grabs sphere data from input file and stores in ogData.
-        for line in inStreamLines:
-            ogSphere = line.split()
-            ogData.append(ogSphere)
+        if(newInputFormat):
+            for line in inStreamLines:
+                ogDataEntry = [line[4], line[5], line[6], line[7]]
+                ogData.append(ogDataEntry)
+        
+        else:
+            #Grabs sphere data from input file and stores in ogData.
+            for line in inStreamLines:
+                ogSphere = line.split()
+                ogData.append(ogSphere)
+                
         inStream.close()
     
     print("Original Coordinates:")
