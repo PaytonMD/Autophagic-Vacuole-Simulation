@@ -102,7 +102,7 @@ def main(fileSelectOpt):
    
     # This is everything except the file input so that I can loop over it.  
             
-    slices = [28, 78, 128, 178, 228]
+    slices = [28, 78, 128, 178]
     for SX in slices:    
         sliceCoord = SX
     
@@ -341,7 +341,7 @@ def main(fileSelectOpt):
         # Now need to export just what we want, in a nice format
         finalOutput = overalldfsk_new[["time", "body_number", "area", "perimeter", "circularity", "AR"]]
         print (finalOutput)
-        finalOutput.to_csv ("sliceData/sliceMeasurements.csv")  
+        finalOutput.to_csv ("sliceData/sliceMeasurements.csv", mode='a')  
 
 # Calls main to run the program
 main(1)
