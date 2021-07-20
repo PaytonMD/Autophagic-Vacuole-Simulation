@@ -57,11 +57,11 @@ class AVS_ModelSteppable(SteppableBasePy):
             self.stop_simulation()
         # first make all pixels Medium, then overwrite the ones that are not
         # this is for a 100x100x1 lattice
-        print(0,"Medium",0,101,0,101,0,0, file = myPiffFile)
+        '''print(0,"Medium",0,101,0,101,0,0, file = myPiffFile)
         for x, y, z in self.every_pixel():  # visit every pixel
             cell = self.cell_field[x,y,z]  # get the cell at this pixel
             if cell:  # check if this pixel is part of a cell or medium
                 cellTypeString="cell_"+str(cell.type)
                 print(cell.id,cellTypeString,x,x,y,y,z,z, file=myPiffFile)
-        myPiffFile.close()
+        myPiffFile.close()'''
         

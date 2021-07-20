@@ -12,7 +12,7 @@ from skimage import measure
 #   Eastern Michigan University
 #   Backues Lab  
 #   Author: Payton Dunning and Steven Backues
-#   Last Date Modified: July 19th, 2021
+#   Last Date Modified: July 20th, 2021
 #
 #   A script for analyzing the contents of an Autophagic Vacuole Simulation (AVS) project formatted 
 #   Compucell 3D (CC3D) simulation. The script takes in a PIF file (.piff), that must contain "Body" and
@@ -38,29 +38,32 @@ from skimage import measure
 paramsFile = "attributes/Model_Parameters.txt"
 
 #cycleRun is a boolean variable. It is false when SliceStats is run alone, and true when run as part of the AVS cycle.
-def main(fileSelectOpt):
+def main(fileSelectOpt, MassRunCheck, inputPiff):
     
     #For a given run of SliceStats_M, all body measurment output lines to the output
     #file will have the same date and time stamp.
     initialTime = time.asctime(time.localtime(time.time()))
     
     print("Now running Master\SliceStats_M.py")
-    outputName = ""
-    inputName = ""
-    
-    if(fileSelectOpt):
-        print("Please Select file...")
-        print("(The file selection screen may appear BEHIND your current application)")
-        Tk().withdraw()
-        filename = askopenfilename()
-        inputName = filename
-        print("Given File Name: %s" %(filename))
-    else: 
-        print(">>Enter INPUT PIF file path+name:")
-        inputName = input()
-
     #The master version of SliceStats will just use this predefined output file for easier use of this script.
     outputName = "sliceData/sliceCoords.txt"
+    inputName = ""
+    
+    if(MassRunCheck == True):
+        inputName = inputPiff
+    else:
+        if(fileSelectOpt):
+            print("Please Select file...")
+            print("(The file selection screen may appear BEHIND your current application)")
+            Tk().withdraw()
+            filename = askopenfilename()
+            inputName = filename
+            print("Given File Name: %s" %(filename))
+        else: 
+            print(">>Enter INPUT PIF file path+name:")
+            inputName = input()
+
+    
     
     print("Grabbing AVS Model Parameters...\n")
     modelParams = grabParams()

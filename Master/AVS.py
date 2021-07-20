@@ -187,7 +187,7 @@ def optionTwo(fileSelectOpt):
         totalTime = (endTime - startTime)/1000.0 #In seconds
         print("\t---CC3D Model Runtime: ~ %d seconds---" %(totalTime))
     
-        SliceStats_M.main(fileSelectOpt, True)
+        SliceStats_M.main(fileSelectOpt, True, piffFile)
         
     print("---Option Two Complete---")
 
@@ -313,7 +313,7 @@ def optionSix(fileSelectOpt):
 #[7]: Run SliceStats Alone
 def optionSeven(fileSelectOpt):
     print("---Option Seven Selected---")
-    SliceStats_M.main(fileSelectOpt)
+    SliceStats_M.main(fileSelectOpt, False, "")
     print("---Option Seven Complete---")
     
 #[8] Run AVSStats Alone
