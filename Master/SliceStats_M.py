@@ -12,7 +12,7 @@ from skimage import measure
 #   Eastern Michigan University
 #   Backues Lab  
 #   Author: Payton Dunning and Steven Backues
-#   Last Date Modified: July 12th, 2021
+#   Last Date Modified: July 19th, 2021
 #
 #   A script for analyzing the contents of an Autophagic Vacuole Simulation (AVS) project formatted 
 #   Compucell 3D (CC3D) simulation. The script takes in a PIF file (.piff), that must contain "Body" and
@@ -125,8 +125,8 @@ def main(fileSelectOpt):
         sys.exit("\n!!!This model does not support a vacuole slice threshold of %s" %(vacMin))
         
     #The starting and ending X-coordinates viable for a slice to be taken at.
-    minX = centerX - diamRangeVar
-    maxX = centerX + diamRangeVar
+    minX = int(centerX - diamRangeVar)
+    maxX = int(centerX + diamRangeVar)
     
     
     print(">>Finally, select an option for determining where a slice will be taken:")

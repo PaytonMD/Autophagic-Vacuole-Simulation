@@ -1,4 +1,4 @@
-1# -*- coding: utf-8 -*-
+# -*- coding: utf-8 -*-
 import subprocess
 import time
 
@@ -10,7 +10,6 @@ import Condenser_M
 
 from tkinter import Tk
 from tkinter.filedialog import askopenfilename
-#from rpy2.robjects import r
 
 ############################################################################################################
 #   Eastern Michigan University
@@ -39,6 +38,7 @@ from tkinter.filedialog import askopenfilename
 #   along with this program.  If not, see <https://www.gnu.org/licenses/>.
 ############################################################################################################
 
+
 #paramsFile is used to keep track of several variables used by multiple scipts.
 paramsFile = "attributes/Model_Parameters.txt"
 
@@ -55,7 +55,7 @@ def main():
     while(True):
         print(">>Please select from the following options by entering the corresponding number:")
         print("\t[1]: Single AVS Pipeline Run (COMING SOON)")
-        print("\t[2]: Mass AVS Pipeline Runs (COMING SOON)")
+        print("\t[2]: Mass AVS Pipeline Runs")
         print("\t[3]: Run GenBalls Alone (COMING SOON)")
         print("\t[4]: Run inputAdjustment Alone")
         print("\t[5]: Run SphereGen Alone")
@@ -110,7 +110,99 @@ def optionOne(fileSelectOpt):
 #[2] Mass AVS Pipeline Runs (COMING SOON)
 def optionTwo(fileSelectOpt):
     print("---Option Two Selected---")
-    print("\tCOMING SOON! Please choose another option.")
+    
+    
+    print("What scale factor would you like to use for this mass run? (Please use whole numbers)")
+    massRunScaleFactor = int(input())
+    
+    print("\n---Running CC3D requires the CC3D batch file 'runScript.bat'.---")
+    print("---(The default installation site on Windows is 'C:\CompuCell3D-py3-64bit\')---")
+    batFile = ""
+    cc3dModelFile = ""
+    if(fileSelectOpt == True):
+        print(">>Select your 'runScript.bat' file:")
+        print("(The file selection screen may appear BEHIND your current application)")
+        Tk().withdraw()
+        batFile = askopenfilename()
+        
+        print(">>Select your 'Model.cc3d' file:")
+        print("(The file selection screen may appear BEHIND your current application)")
+        Tk().withdraw()
+        cc3dModelFile = askopenfilename()
+    else:
+        print(">>Enter file path+name for your CC3D runScript.bat file:")
+        batFile = input()
+    
+        print(">>Enter file path+name for your CC3D Model's .cc3d file:")
+        cc3dModelFile = input()
+        
+        
+    massInStream = open("spheregen_input_example.txt","r")
+    
+    #allData will contain all lines from the input file.
+    allData = massInStream.readlines()
+    dataByRun = []
+    dataListIndex = 0
+    
+    lastRun = 0
+    '''This for loop will iterate over all of the read in lines in allData
+     and split them up into a series of sub-lists within dataByRun.
+    Each sub-list in dataByRun is a list of lists containing the split up lines
+     organized together by run number.
+    To clarify, dataByRun is organized as such:
+    dataByRun = [[run1Lines], [run2Lines], etc...]
+    [run1Lines] = [[split_up_line_1_data], [split_up_line_2_data], etc...]'''
+    for line in allData:
+        splitLine = line.split()
+        
+        if(len(splitLine) == 8):
+            runNum = splitLine[0]
+            #test1 = "Test1: %s \n" %(splitLine[0])
+            #print(test1)
+            
+            if(lastRun == 0):
+                lastRun = runNum
+                #Adds an initial sub-list/array to the dataByRun list/array.
+                #Yes I know arrays and lists in python are technically different, but for now I'm referring
+                # to them interchangeably in comments.
+                dataByRun.append([])
+                dataByRun[dataListIndex].append(splitLine)
+                
+            elif(lastRun != runNum):
+                lastRun = runNum
+                dataByRun.append([])
+                dataListIndex += 1
+                dataByRun[dataListIndex].append(splitLine)
+            else:
+                dataByRun[dataListIndex].append(splitLine)
+           
+    massInStream.close()
+    
+    
+    #Takes each set of lines (runs) and calls inputAdjustment, then SphereGen, then CC3D, then SliceStats
+    # with a set of lines (spheredata) at a time.
+    for runSet in dataByRun:
+        #print("\nRun Set Length: %d" %(len(runSet)))
+        #Line coresponding to the first (zeroith) line of a run representing the vacuole wall.
+        wallLine = runSet[0]
+        #print(wallLine)
+        inputAdjustment.main(fileSelectOpt, True, runSet, massRunScaleFactor)
+
+        SphereGen_M.main(fileSelectOpt, True)
+        
+        print("\n\t---Compucell3D Simulation Start (Can take seconds to hours depending on model used.)---")
+        startTime = (time.time()*1000.0) # in milliseconds
+    
+        subprocess.run([batFile, "-i", cc3dModelFile])
+    
+        endTime = (time.time()*1000.0) # in milliseconds
+        print("\n\t---Compucell3D Simulation Finished---")
+    
+        totalTime = (endTime - startTime)/1000.0 #In seconds
+        print("\t---CC3D Model Runtime: ~ %d seconds---" %(totalTime))
+    
+        SliceStats_M.main(fileSelectOpt, True)
+        
     print("---Option Two Complete---")
 
 #[3] Run GenBalls Alone (COMING SOON)
@@ -156,13 +248,13 @@ def optionThree(fileSelectOpt):
 #[4]: Run inputAdjustment Alone
 def optionFour(fileSelectOpt):
     print("---Option Four Selected---")
-    inputAdjustment.main(fileSelectOpt)
+    inputAdjustment.main(fileSelectOpt, False, [], -1)
     print("---Option Four Complete---")
     
 #[5]: Run SphereGen Alone
 def optionFive(fileSelectOpt):
     print("---Option Five Selected---")
-    SphereGen_M.main(True, fileSelectOpt)
+    SphereGen_M.main(fileSelectOpt, False)
     print("---Option Five Complete---")
     
 #[6]: Run CC3D Simulation Alone
@@ -214,8 +306,8 @@ def optionEight(fileSelectOpt):
 #[9]: Run inputAdjustment + SphereGen
 def optionNine(fileSelectOpt):
     print("---Option Nine Selected---")
-    inputAdjustment.main(fileSelectOpt)
-    SphereGen_M.main(False, fileSelectOpt)
+    inputAdjustment.main(fileSelectOpt, False, [], -1)
+    SphereGen_M.main(fileSelectOpt, False)
     print("---Option Nine Complete---")
 
 #[10] Run Condenser Utility Script
