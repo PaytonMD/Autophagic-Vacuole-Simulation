@@ -407,15 +407,18 @@ Then we'll rename those bodies with greater than one area with new numbers - a n
     else:
         overalldfsk_new = overalldfsk_big_enough
     
-    # Now to do some more calculations to get exactly the data I want, Aspect Ratio (AR) and Circularity 
-    overalldfsk_new["AR"]=overalldfsk_new["major_axis_length"] / overalldfsk_new["minor_axis_length"]  #Adds Aspect ratio column
-    overalldfsk_new["circularity"]= 4*math.pi*overalldfsk_new["area"] / (overalldfsk_new["perimeter"]**2)  #Adds circularity column
-    overalldfsk_new["time"] = initialTime
-    overalldfsk_new.rename(columns = {"imgnum":"body_number"}, inplace=True)
-    # Now need to export just what we want, in a nice format
-    finalOutput = overalldfsk_new[["time", "body_number", "area", "perimeter", "circularity", "AR"]]
-    print (finalOutput)
-    finalOutput.to_csv ()  #finish this
+	# I need to adjust the area and perimeter by the scale factor
+	overalldfsk_new["area_scaled"] = scaleFactor**2*overalldfsk_new["area"]
+	overalldfsk_new["perimeter_scaled"] = scaleFactor*overalldfsk_new["perimeter"]
+	# Now to do some more calculations to get exactly the data I want, Aspect Ratio (AR) and Circularity 
+	overalldfsk_new["AR"]=overalldfsk_new["major_axis_length"] / overalldfsk_new["minor_axis_length"]  #Adds Aspect ratio column
+	overalldfsk_new["circularity"]= 4*math.pi*overalldfsk_new["area_scaled"] / (overalldfsk_new["perimeter_scaled"]**2)  #Adds circularity column
+	overalldfsk_new["time"] = initialTime
+	overalldfsk_new.rename(columns = {"imgnum":"body_number"}, inplace=True)
+	# Now need to export just what we want, in a nice format
+	finalOutput = overalldfsk_new[["time", "body_number", "area_scaled", "perimeter_scaled", "circularity", "AR"]]
+	print (finalOutput)
+	finalOutput.to_csv ("sliceData/sliceMeasurements.csv", mode='a')  
     
     numpy_array = finalOutput.to_numpy()
     np.savetxt("test_file.txt", numpy_array, fmt = "%d")

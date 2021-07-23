@@ -102,7 +102,7 @@ def main(fileSelectOpt):
    
     # This is everything except the file input so that I can loop over it.  
             
-    slices = [178, 228]
+    slices = [28, 78, 128, 178, 228]
     for SX in slices:    
         sliceCoord = SX
     
@@ -333,13 +333,16 @@ def main(fileSelectOpt):
             else:
                 overalldfsk_new = overalldfsk_big_enough
             
+            # I need to adjust the area and perimeter by the scale factor
+            overalldfsk_new["area_scaled"] = scaleFactor**2*overalldfsk_new["area"]
+            overalldfsk_new["perimeter_scaled"] = scaleFactor*overalldfsk_new["perimeter"]
             # Now to do some more calculations to get exactly the data I want, Aspect Ratio (AR) and Circularity 
             overalldfsk_new["AR"]=overalldfsk_new["major_axis_length"] / overalldfsk_new["minor_axis_length"]  #Adds Aspect ratio column
-            overalldfsk_new["circularity"]= 4*math.pi*overalldfsk_new["area"] / (overalldfsk_new["perimeter"]**2)  #Adds circularity column
+            overalldfsk_new["circularity"]= 4*math.pi*overalldfsk_new["area_scaled"] / (overalldfsk_new["perimeter_scaled"]**2)  #Adds circularity column
             overalldfsk_new["time"] = initialTime
             overalldfsk_new.rename(columns = {"imgnum":"body_number"}, inplace=True)
             # Now need to export just what we want, in a nice format
-            finalOutput = overalldfsk_new[["time", "body_number", "area", "perimeter", "circularity", "AR"]]
+            finalOutput = overalldfsk_new[["time", "body_number", "area_scaled", "perimeter_scaled", "circularity", "AR"]]
             print (finalOutput)
             finalOutput.to_csv ("sliceData/sliceMeasurements.csv", mode='a')  
         else:
