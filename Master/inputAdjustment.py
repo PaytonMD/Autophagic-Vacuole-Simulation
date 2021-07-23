@@ -74,10 +74,17 @@ def main(fileSelectOpt, massRunCheck, massRunData, scaleFactor):
         inStream = open(fileInput, "r")
         #List of all lines from the given input file.
         inStreamLines = inStream.readlines()
+        firstRunNum = inStreamLines[0][0]
         
+        #Using the newer input format, only the first set of sphere data in a file will be used.
+        #In other words, if an input file has two runs worth of data, only the first run will be used.
         if(newInputFormat):
             for line in inStreamLines:
-                ogDataEntry = [line[4], line[5], line[6], line[7]]
+                initialData = line.split()
+                #Break out of loop when the next run's data is met.
+                if(line[0] != firstRunNum):
+                    break
+                ogDataEntry = [initialData[4], initialData[5], initialData[6], initialData[7]]
                 ogData.append(ogDataEntry)
         
         else:

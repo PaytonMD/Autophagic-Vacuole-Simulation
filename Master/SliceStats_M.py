@@ -3,6 +3,7 @@ import sys
 import random
 import math
 import time
+import csv
 from tkinter import Tk
 from tkinter.filedialog import askopenfilename
 import numpy as np
@@ -53,7 +54,7 @@ def main(fileSelectOpt, MassRunCheck, inputPiff):
         inputName = inputPiff
     else:
         if(fileSelectOpt):
-            print("Please Select file...")
+            print("Please Select piff file...")
             print("(The file selection screen may appear BEHIND your current application)")
             Tk().withdraw()
             filename = askopenfilename()
@@ -377,62 +378,104 @@ def main(fileSelectOpt, MassRunCheck, inputPiff):
                 props2 = measure.regionprops_table(all_labels,properties=propertylist)
                 df_skimage = pd.DataFrame(props2)  
                 df_skimage['imgnum'] = currentBody
+                #I'll test this later, but why does the variable need to be set to itself after appending a new set of values?
+                #Is this just how panda dataframes work?
                 overalldfsk = overalldfsk.append(df_skimage,ignore_index=True)
         index1 += 1
         
-    print(overalldfsk) 
-    """ Filtering out tiny regions."""
-    big_enough = overalldfsk['area'] >= recogLimit
-    too_small = np.invert(big_enough)
-    print(big_enough)
-    print(too_small)
-    # do the filtering:
-    overalldfsk_big_enough = overalldfsk[big_enough]
-    ''' Now that we've filtered out the too-small regions, let's look for APBs that had more than 1 big-enough region.
-We'll do what's called a "pivot table" in Excel. To quantify how spread-out the areas are for any bodynumber,
- we'll use the statistical range (max-minus-min), which Python calls 'ptp'=peak-to-peak,
-We'll also take the StdDev, though that gives NaN when there's only 1 region for a bodynumber. 
-Any imagenum with count_area >= 2 has multiple regions in it (and they are not just tiny ones, since we filtered those out already)
-Then we'll rename those bodies with greater than one area with new numbers - a new body number for each area'''
-    pvt_df=overalldfsk_big_enough.pivot_table(values='area',index='imgnum',aggfunc=["count",np.mean,np.std,np.amax,np.ptp])
-    pvt_df.columns = list(map("_".join, pvt_df.columns)) #renames the columns with simpler names
-    print(pvt_df.columns)
-    print (pvt_df)  #this is a pandas dataframe
-    pvt_df_split = pvt_df[pvt_df['count_area'] >= 2] #subsetting just those bodies that are split in two
-    if (len(pvt_df_split) >= 1):
-        pvt_df_single =pvt_df[pvt_df['count_area'] < 2] #subsetting just those bodies that are whole
-        singles = pvt_df_single.index
-        splits = pvt_df_split.index
-        print (splits)
-        print (singles)
-        #now to rename the bodies that are split in parts, giving each part a new body number
-        new_bod_nums_req = len(pvt_df_split) # how many new body numbers we need
-        new_bod_nums = range(1000, 1001+new_bod_nums_req, 1)
-        #print (new_bod_nums)
-        overalldfsk_single = overalldfsk_big_enough[overalldfsk_big_enough["imgnum"].isin(singles)] # filters the original list by just the single bodies
-        #print (overalldfsk_single)
-        overalldfsk_splits = overalldfsk_big_enough[overalldfsk_big_enough["imgnum"].isin(splits)] # filters the original list by just the split bodies
-        #print (overalldfsk_splits)
-        overalldfsk_splits.loc[:,"imgnum"] = new_bod_nums  #giving the splits data frame the new body numbers
-        #print (overalldfsk_splits)
-        overalldfsk_new = overalldfsk_single.append(overalldfsk_splits) #this has the data on all of the bodies, with unique body numbers
-        print (overalldfsk_new)
+    #IF the dataframe is empty
+    if(overalldfsk.empty == False):
+        print("\n overalldfsk check 1...")
+        print(overalldfsk) 
+        """ Filtering out tiny regions."""
+        big_enough = overalldfsk['area'] >= recogLimit
+        too_small = np.invert(big_enough)
+        print(big_enough)
+        print(too_small)
+        # do the filtering:
+        overalldfsk_big_enough = overalldfsk[big_enough]
+        ''' Now that we've filtered out the too-small regions, let's look for APBs that had more than 1 big-enough region.
+    We'll do what's called a "pivot table" in Excel. To quantify how spread-out the areas are for any bodynumber,
+     we'll use the statistical range (max-minus-min), which Python calls 'ptp'=peak-to-peak,
+    We'll also take the StdDev, though that gives NaN when there's only 1 region for a bodynumber. 
+    Any imagenum with count_area >= 2 has multiple regions in it (and they are not just tiny ones, since we filtered those out already)
+    Then we'll rename those bodies with greater than one area with new numbers - a new body number for each area'''
+        pvt_df=overalldfsk_big_enough.pivot_table(values='area',index='imgnum',aggfunc=["count",np.mean,np.std,np.amax,np.ptp])
+        pvt_df.columns = list(map("_".join, pvt_df.columns)) #renames the columns with simpler names
+        print("\n pvt_df.columns check...")
+        print(pvt_df.columns)
+        print (pvt_df)  #this is a pandas dataframe
+        pvt_df_split = pvt_df[pvt_df['count_area'] >= 2] #subsetting just those bodies that are split in two
+        if (len(pvt_df_split) >= 1):
+            pvt_df_single =pvt_df[pvt_df['count_area'] < 2] #subsetting just those bodies that are whole
+            singles = pvt_df_single.index
+            splits = pvt_df_split.index
+            print (splits)
+            print (singles)
+            #now to rename the bodies that are split in parts, giving each part a new body number
+            new_bod_nums_req = len(pvt_df_split) # how many new body numbers we need
+            new_bod_nums = range(1000, 1001+new_bod_nums_req, 1)
+            #print (new_bod_nums)
+            overalldfsk_single = overalldfsk_big_enough[overalldfsk_big_enough["imgnum"].isin(singles)] # filters the original list by just the single bodies
+            #print (overalldfsk_single)
+            overalldfsk_splits = overalldfsk_big_enough[overalldfsk_big_enough["imgnum"].isin(splits)] # filters the original list by just the split bodies
+            #print (overalldfsk_splits)
+            overalldfsk_splits.loc[:,"imgnum"] = new_bod_nums  #giving the splits data frame the new body numbers
+            #print (overalldfsk_splits)
+            overalldfsk_new = overalldfsk_single.append(overalldfsk_splits) #this has the data on all of the bodies, with unique body numbers
+            print("\n overalldfsk check 2...")
+            print (overalldfsk_new)
+        else:
+            overalldfsk_new = overalldfsk_big_enough
+        
+        # Now to do some more calculations to get exactly the data I want, Aspect Ratio (AR) and Circularity 
+        overalldfsk_new["AR"]=overalldfsk_new["major_axis_length"] / overalldfsk_new["minor_axis_length"]  #Adds Aspect ratio column
+        overalldfsk_new["circularity"]= 4*math.pi*overalldfsk_new["area"] / (overalldfsk_new["perimeter"]**2)  #Adds circularity column
+        overalldfsk_new["time"] = initialTime
+        overalldfsk_new.rename(columns = {"imgnum":"body_number"}, inplace=True)
+        # Now need to export just what we want, in a nice format
+        finalOutput = overalldfsk_new[["time", "body_number", "area", "perimeter", "circularity", "AR"]]
+        #print("\n finalOutput check...")
+        print (finalOutput)
+    
     else:
-        overalldfsk_new = overalldfsk_big_enough
+        print("\n---Dataframe is empty, no bodies caught in slice.---")
+    #finalOutput.to_csv ()  #finish this
+    #print("\nEND OF SLICESTATS CHECK!!!")
+    #numpy_array = finalOutput.to_numpy()
+    #np.savetxt("test_file.txt", numpy_array, fmt = "%d")
     
-    # Now to do some more calculations to get exactly the data I want, Aspect Ratio (AR) and Circularity 
-    overalldfsk_new["AR"]=overalldfsk_new["major_axis_length"] / overalldfsk_new["minor_axis_length"]  #Adds Aspect ratio column
-    overalldfsk_new["circularity"]= 4*math.pi*overalldfsk_new["area"] / (overalldfsk_new["perimeter"]**2)  #Adds circularity column
-    overalldfsk_new["time"] = initialTime
-    overalldfsk_new.rename(columns = {"imgnum":"body_number"}, inplace=True)
-    # Now need to export just what we want, in a nice format
-    finalOutput = overalldfsk_new[["time", "body_number", "area", "perimeter", "circularity", "AR"]]
-    print (finalOutput)
-    finalOutput.to_csv ()  #finish this
     
-    numpy_array = finalOutput.to_numpy()
-    np.savetxt("test_file.txt", numpy_array, fmt = "%d")
+    #OUTPUT SEGMENT:
+    #I'm going to ignore some of the output capabilites of dataframes for the moment and simply pull out
+    #the information and add it to strings with other relevant body info and print it both to a text
+    #file and to a csv file.
     
+    finalOutputArray = finalOutput.to_numpy()
+    
+    #Volume calculation should be double checked at a later time, the current output seems off - Payton.
+    
+    outStream2 = open("sliceData/sliceDefault.txt", "a+")
+    
+    #To-Do: Add in header line to csv/txt output files.
+    print("Time/Data, Body_Number, Body_Area, Body_Volume, Perimeter, Circularity, AR, Wall_Radius")
+    for ele in finalOutputArray:
+        print("\nFinal, Final Output")
+        bodyNum = int(ele[1])
+        bodyVolume = bodyWholeVol[bodyTotalVolumeNums.index(bodyNum)]
+        scaledVolume = bodyVolume * scaleFactor
+        scaledWallRadius = int(wallRadius) * scaleFactor
+        outputLine = "%s , %s , %s , %s , %s , %s , %s, %s\n" %(ele[0], ele[1], ele[2], scaledVolume, ele[3], ele[4], ele[5], scaledWallRadius)
+        print(outputLine)
+        with open('sliceData.csv', mode='a+') as csvOutputFile:
+            sliceWriter = csv.writer(csvOutputFile, delimiter=',', quotechar='"', quoting=csv.QUOTE_MINIMAL)
+            sliceWriter.writerow([ele[0], ele[1], ele[2], scaledVolume, ele[3], ele[4], ele[5], scaledWallRadius])   
+        
+        outStream2.write(outputLine) # Outputs each area value in the result array seperated by commas.
+        
+    outStream2.close()
+    #print(finalOutputArray[0])
+    #print(finalOutputArray[0])
 # Now I need to talk to Payton about this, to see what data he needs and how to output it to meet his standards
     
 #    outStream2 = open("sliceData/sliceDefault.txt", "a+")
