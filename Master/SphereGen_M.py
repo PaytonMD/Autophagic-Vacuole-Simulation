@@ -9,7 +9,7 @@ from tkinter.filedialog import askopenfilename
 #   Eastern Michigan University
 #   Backues Lab  
 #   Author: Payton Dunning
-#   Last Date Modified: May 3rd, 2021
+#   Last Date Modified: July 20th, 2021
 #
 #   Reads in numerical data representing spheres and outputs a CC3D compatible PIF file representing the
 #   various spheres. Sphere data is read in as lines from either a text file or typped into the console.
@@ -47,12 +47,13 @@ def main(fileSelectOpt, massRunCheck):
     if(massRunCheck == True):
         #print("MassCheck")
         fileOutput = "AVS_Model\Simulation\Model.piff"
-        useFile(massRunCheck, fileSelectOpt)
+        useFile(fileSelectOpt, massRunCheck)
     else:
         if(fileSelectOpt == True):
             print(">>Select the OUTPUT PIF file you'd like to use:")
             Tk().withdraw()
             fileOutput = askopenfilename()
+            useFile(fileSelectOpt, massRunCheck)
         else:
             print("\n>>Enter OUTPUT PIF file path and name:", end='')
             fileOutput = input()
@@ -74,8 +75,13 @@ def main(fileSelectOpt, massRunCheck):
 def useFile(fileSelectOpt, massRunCheck):
     #If the inputAdjustment + SphereGen_M option was selected in Master (massRunCheck == True),
     #use the default input file sphereData.
-    if(massRunCheck):
+    fileInput = "sphereData.txt"
+    #I'll delete this commented section after testing. In general, sphereData should always be used as
+    #the input file. User selection of another input file is unneeded here.
+    '''if(massRunCheck):
         fileInput = "sphereData.txt"
+    elif():
+        print()
     else:
         if(fileSelectOpt == True):
             print(">>Select the INPUT sphere data file you'd like to use:")
@@ -84,7 +90,7 @@ def useFile(fileSelectOpt, massRunCheck):
             fileInput = askopenfilename()
         else:
             print("\n>>Enter INPUT sphere data file path and name:", end='')
-            fileInput = input()
+            fileInput = input()'''
     
     inStream = open(fileInput, "r")
     #List of all lines from the given input file.
