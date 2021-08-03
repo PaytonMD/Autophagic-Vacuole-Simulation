@@ -382,7 +382,7 @@ def main(fileSelectOpt, MassRunCheck, inputPiff):
                 #Is this just how panda dataframes work?
                 overalldfsk = overalldfsk.append(df_skimage,ignore_index=True)
         index1 += 1
-        
+
     #IF the dataframe is empty
     if(overalldfsk.empty == False):
         print("\n overalldfsk check 1...")
@@ -402,7 +402,6 @@ def main(fileSelectOpt, MassRunCheck, inputPiff):
     Then we'll rename those bodies with greater than one area with new numbers - a new body number for each area'''
         pvt_df=overalldfsk_big_enough.pivot_table(values='area',index='imgnum',aggfunc=["count",np.mean,np.std,np.amax,np.ptp])
         pvt_df.columns = list(map("_".join, pvt_df.columns)) #renames the columns with simpler names
-        print("\n pvt_df.columns check...")
         print(pvt_df.columns)
         print (pvt_df)  #this is a pandas dataframe
         pvt_df_split = pvt_df[pvt_df['count_area'] >= 2] #subsetting just those bodies that are split in two
@@ -423,20 +422,25 @@ def main(fileSelectOpt, MassRunCheck, inputPiff):
             overalldfsk_splits.loc[:,"imgnum"] = new_bod_nums  #giving the splits data frame the new body numbers
             #print (overalldfsk_splits)
             overalldfsk_new = overalldfsk_single.append(overalldfsk_splits) #this has the data on all of the bodies, with unique body numbers
-            print("\n overalldfsk check 2...")
             print (overalldfsk_new)
         else:
             overalldfsk_new = overalldfsk_big_enough
         
-        # Now to do some more calculations to get exactly the data I want, Aspect Ratio (AR) and Circularity 
+    	# I need to adjust the area and perimeter by the scale factor
+        overalldfsk_new["area_scaled"] = scaleFactor**2*overalldfsk_new["area"]
+        overalldfsk_new["perimeter_scaled"] = scaleFactor*overalldfsk_new["perimeter"]
+    	# Now to do some more calculations to get exactly the data I want, Aspect Ratio (AR) and Circularity 
         overalldfsk_new["AR"]=overalldfsk_new["major_axis_length"] / overalldfsk_new["minor_axis_length"]  #Adds Aspect ratio column
-        overalldfsk_new["circularity"]= 4*math.pi*overalldfsk_new["area"] / (overalldfsk_new["perimeter"]**2)  #Adds circularity column
+        overalldfsk_new["circularity"]= 4*math.pi*overalldfsk_new["area_scaled"] / (overalldfsk_new["perimeter_scaled"]**2)  #Adds circularity column
         overalldfsk_new["time"] = initialTime
         overalldfsk_new.rename(columns = {"imgnum":"body_number"}, inplace=True)
-        # Now need to export just what we want, in a nice format
-        finalOutput = overalldfsk_new[["time", "body_number", "area", "perimeter", "circularity", "AR"]]
-        #print("\n finalOutput check...")
+    	# Now need to export just what we want, in a nice format
+        finalOutput = overalldfsk_new[["time", "body_number", "area_scaled", "perimeter_scaled", "circularity", "AR"]]
         print (finalOutput)
+        finalOutput.to_csv ("sliceData/sliceMeasurements.csv", mode='a')  
+        
+        numpy_array = finalOutput.to_numpy()
+        np.savetxt("test_file.txt", numpy_array, fmt = "%d")
     
     else:
         print("\n---Dataframe is empty, no bodies caught in slice.---")

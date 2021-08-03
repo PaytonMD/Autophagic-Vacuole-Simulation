@@ -130,9 +130,9 @@ def optionTwo(fileSelectOpt):
     allData = massInStream.readlines()
     dataByRun = []
     dataListIndex = 0
+    
     #Keeps track of how many bodies were originally in each run.
     numBodiesPerRun = []
-    numBodiesCount = 0
     lastRun = 0
     
     '''This for loop will iterate over all of the read in lines in allData
@@ -150,12 +150,16 @@ def optionTwo(fileSelectOpt):
             
             if(lastRun == 0):
                 lastRun = runNum
+                bodiesInRun = int(splitLine[1])
+                numBodiesPerRun.append(bodiesInRun)
                 #Adds an initial sub-list to the dataByRun list.
                 dataByRun.append([])
                 dataByRun[dataListIndex].append(splitLine)
                 
             elif(lastRun != runNum):
                 lastRun = runNum
+                bodiesInRun = int(splitLine[1])
+                numBodiesPerRun.append(bodiesInRun)
                 dataByRun.append([])
                 dataListIndex += 1
                 dataByRun[dataListIndex].append(splitLine)
