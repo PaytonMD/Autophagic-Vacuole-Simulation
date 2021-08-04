@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 import sys
+import os
 import random
 import math
 import time
@@ -363,6 +364,7 @@ def main(fileSelectOpt, MassRunCheck, inputPiff):
         currentArea = len(projectionData)
         if(currentArea >= recogLimit):
             bodyAreas.append([currentBody, currentArea])
+            
             '''Now to make the imageArray for each body - a Numpy array the size of the simulation, with "1's" at every pixel location, and "0's" 
         everywhere there isn't a pixel'''
             imageArray = np.zeros ((ArDim, ArDim), dtype=int)
@@ -371,6 +373,7 @@ def main(fileSelectOpt, MassRunCheck, inputPiff):
             bodyImages.append(imageArray)
             all_labels = measure.label(imageArray)
             propertylist=['label', 'bbox', 'area', 'centroid', 'convex_area','eccentricity','euler_number','filled_area','major_axis_length','minor_axis_length','perimeter']
+            
             '''this will add all regions that it finds to the dataframe, even those with areas below the recognition limit. We will filter those out later.
             It’s nice to have all of them recorded for filtering out later, so we can also do stats all at once on what gets filtered out.
             Area and perimeter units are pixels, not nanometers (nm); we’ll translate numbers in the dataframe to nm all at once later.'''
@@ -378,15 +381,11 @@ def main(fileSelectOpt, MassRunCheck, inputPiff):
                 props2 = measure.regionprops_table(all_labels,properties=propertylist)
                 df_skimage = pd.DataFrame(props2)  
                 df_skimage['imgnum'] = currentBody
-                #I'll test this later, but why does the variable need to be set to itself after appending a new set of values?
-                #Is this just how panda dataframes work?
                 overalldfsk = overalldfsk.append(df_skimage,ignore_index=True)
         index1 += 1
 
     #IF the dataframe is empty
     if(overalldfsk.empty == False):
-        print("\n overalldfsk check 1...")
-        print(overalldfsk) 
         """ Filtering out tiny regions."""
         big_enough = overalldfsk['area'] >= recogLimit
         too_small = np.invert(big_enough)
@@ -394,6 +393,7 @@ def main(fileSelectOpt, MassRunCheck, inputPiff):
         print(too_small)
         # do the filtering:
         overalldfsk_big_enough = overalldfsk[big_enough]
+        
         ''' Now that we've filtered out the too-small regions, let's look for APBs that had more than 1 big-enough region.
     We'll do what's called a "pivot table" in Excel. To quantify how spread-out the areas are for any bodynumber,
      we'll use the statistical range (max-minus-min), which Python calls 'ptp'=peak-to-peak,
@@ -405,12 +405,12 @@ def main(fileSelectOpt, MassRunCheck, inputPiff):
         print(pvt_df.columns)
         print (pvt_df)  #this is a pandas dataframe
         pvt_df_split = pvt_df[pvt_df['count_area'] >= 2] #subsetting just those bodies that are split in two
+        
         if (len(pvt_df_split) >= 1):
             pvt_df_single =pvt_df[pvt_df['count_area'] < 2] #subsetting just those bodies that are whole
             singles = pvt_df_single.index
             splits = pvt_df_split.index
-            print (splits)
-            print (singles)
+
             #now to rename the bodies that are split in parts, giving each part a new body number
             new_bod_nums_req = len(pvt_df_split) # how many new body numbers we need
             new_bod_nums = range(1000, 1001+new_bod_nums_req, 1)
@@ -440,44 +440,37 @@ def main(fileSelectOpt, MassRunCheck, inputPiff):
         finalOutput.to_csv ("sliceData/sliceMeasurements.csv", mode='a')  
         
         numpy_array = finalOutput.to_numpy()
-        np.savetxt("test_file.txt", numpy_array, fmt = "%d")
-    
-        #finalOutput.to_csv ()  #finish this
-        #print("\nEND OF SLICESTATS CHECK!!!")
-        #numpy_array = finalOutput.to_numpy()
-        #np.savetxt("test_file.txt", numpy_array, fmt = "%d")
-        
-        
-        #OUTPUT SEGMENT:
-        #I'm going to ignore some of the output capabilites of dataframes for the moment and simply pull out
-        #the information and add it to strings with other relevant body info and print it both to a text
-        #file and to a csv file.
+        np.savetxt("test_file.txt", numpy_array, fmt = "%s")
         
         finalOutputArray = finalOutput.to_numpy()
+
         
-        #Volume calculation should be double checked at a later time, the current output seems off - Payton.
+        print("\nFinal Output Entries to be written to files:")
+        headerLine = "Time/Date , Body_Number , Body_Area , Body_Volume , Perimeter , Circularity , AR , Wall_Radius"
+        print(headerLine)
         
-        outStream2 = open("sliceData/sliceDefault.txt", "a+")
-        
-        #To-Do: Add in header line to csv/txt output files.
-        print("Time/Data, Body_Number, Body_Area, Body_Volume, Perimeter, Circularity, AR, Wall_Radius")
         for ele in finalOutputArray:
-            print("\nFinal, Final Output")
             bodyNum = int(ele[1])
             bodyVolume = bodyWholeVol[bodyTotalVolumeNums.index(bodyNum)]
             scaledVolume = bodyVolume * scaleFactor
             scaledWallRadius = int(wallRadius) * scaleFactor
-            outputLine = "%s , %s , %s , %s , %s , %s , %s, %s\n" %(ele[0], ele[1], ele[2], scaledVolume, ele[3], ele[4], ele[5], scaledWallRadius)
+            outputLine = "%s , %s , %s , %s , %s , %s , %s, %s" %(ele[0], ele[1], ele[2], scaledVolume, ele[3], ele[4], ele[5], scaledWallRadius)
+            
             print(outputLine)
-            with open('sliceData/sliceOutputData.csv', mode='a+') as csvOutputFile:
+            
+            with open('sliceData/sliceDataOutput.csv', mode='a+') as csvOutputFile:
                 sliceWriter = csv.writer(csvOutputFile, delimiter=',', quotechar='"', quoting=csv.QUOTE_MINIMAL)
+                
+                if(os.path.getsize('sliceData/sliceDataOutput.csv')==0):
+                    sliceWriter.writerow(["Time/Data", "Body_Number", "Body_Area", "Body_Volume", "Perimeter", "Circularity", "AR", "Wall_Radius"])
                 sliceWriter.writerow([ele[0], ele[1], ele[2], scaledVolume, ele[3], ele[4], ele[5], scaledWallRadius])   
             
+            outStream2 = open("sliceData/sliceDefault.txt", "a+")
+            if(os.path.getsize("sliceData/sliceDefault.txt")==0):
+                outStream2.write("%s\n" %(headerLine))
             outStream2.write(outputLine) # Outputs each area value in the result array seperated by commas.
             
         outStream2.close()
-        #print(finalOutputArray[0])
-        #print(finalOutputArray[0])
     
     else:
         print("\n---Dataframe is empty, no bodies caught in slice.---")
