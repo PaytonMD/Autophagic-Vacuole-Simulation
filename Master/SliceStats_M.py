@@ -138,7 +138,7 @@ def main(fileSelectOpt, MassRunCheck, inputPiff):
     sliceCoord = -1
     
     if(MassRunCheck == True):
-        sliceCoord = centerX
+        sliceCoord = random.randint(minX, maxX)
     else:
         print(">>Finally, select an option for determining where a slice will be taken:")
         print("\t[0 for slice to be taken at centerX coordinate]")
@@ -442,62 +442,47 @@ def main(fileSelectOpt, MassRunCheck, inputPiff):
         numpy_array = finalOutput.to_numpy()
         np.savetxt("test_file.txt", numpy_array, fmt = "%d")
     
+        #finalOutput.to_csv ()  #finish this
+        #print("\nEND OF SLICESTATS CHECK!!!")
+        #numpy_array = finalOutput.to_numpy()
+        #np.savetxt("test_file.txt", numpy_array, fmt = "%d")
+        
+        
+        #OUTPUT SEGMENT:
+        #I'm going to ignore some of the output capabilites of dataframes for the moment and simply pull out
+        #the information and add it to strings with other relevant body info and print it both to a text
+        #file and to a csv file.
+        
+        finalOutputArray = finalOutput.to_numpy()
+        
+        #Volume calculation should be double checked at a later time, the current output seems off - Payton.
+        
+        outStream2 = open("sliceData/sliceDefault.txt", "a+")
+        
+        #To-Do: Add in header line to csv/txt output files.
+        print("Time/Data, Body_Number, Body_Area, Body_Volume, Perimeter, Circularity, AR, Wall_Radius")
+        for ele in finalOutputArray:
+            print("\nFinal, Final Output")
+            bodyNum = int(ele[1])
+            bodyVolume = bodyWholeVol[bodyTotalVolumeNums.index(bodyNum)]
+            scaledVolume = bodyVolume * scaleFactor
+            scaledWallRadius = int(wallRadius) * scaleFactor
+            outputLine = "%s , %s , %s , %s , %s , %s , %s, %s\n" %(ele[0], ele[1], ele[2], scaledVolume, ele[3], ele[4], ele[5], scaledWallRadius)
+            print(outputLine)
+            with open('sliceData/sliceOutputData.csv', mode='a+') as csvOutputFile:
+                sliceWriter = csv.writer(csvOutputFile, delimiter=',', quotechar='"', quoting=csv.QUOTE_MINIMAL)
+                sliceWriter.writerow([ele[0], ele[1], ele[2], scaledVolume, ele[3], ele[4], ele[5], scaledWallRadius])   
+            
+            outStream2.write(outputLine) # Outputs each area value in the result array seperated by commas.
+            
+        outStream2.close()
+        #print(finalOutputArray[0])
+        #print(finalOutputArray[0])
+    
     else:
         print("\n---Dataframe is empty, no bodies caught in slice.---")
-    #finalOutput.to_csv ()  #finish this
-    #print("\nEND OF SLICESTATS CHECK!!!")
-    #numpy_array = finalOutput.to_numpy()
-    #np.savetxt("test_file.txt", numpy_array, fmt = "%d")
-    
-    
-    #OUTPUT SEGMENT:
-    #I'm going to ignore some of the output capabilites of dataframes for the moment and simply pull out
-    #the information and add it to strings with other relevant body info and print it both to a text
-    #file and to a csv file.
-    
-    finalOutputArray = finalOutput.to_numpy()
-    
-    #Volume calculation should be double checked at a later time, the current output seems off - Payton.
-    
-    outStream2 = open("sliceData/sliceDefault.txt", "a+")
-    
-    #To-Do: Add in header line to csv/txt output files.
-    print("Time/Data, Body_Number, Body_Area, Body_Volume, Perimeter, Circularity, AR, Wall_Radius")
-    for ele in finalOutputArray:
-        print("\nFinal, Final Output")
-        bodyNum = int(ele[1])
-        bodyVolume = bodyWholeVol[bodyTotalVolumeNums.index(bodyNum)]
-        scaledVolume = bodyVolume * scaleFactor
-        scaledWallRadius = int(wallRadius) * scaleFactor
-        outputLine = "%s , %s , %s , %s , %s , %s , %s, %s\n" %(ele[0], ele[1], ele[2], scaledVolume, ele[3], ele[4], ele[5], scaledWallRadius)
-        print(outputLine)
-        with open('sliceData.csv', mode='a+') as csvOutputFile:
-            sliceWriter = csv.writer(csvOutputFile, delimiter=',', quotechar='"', quoting=csv.QUOTE_MINIMAL)
-            sliceWriter.writerow([ele[0], ele[1], ele[2], scaledVolume, ele[3], ele[4], ele[5], scaledWallRadius])   
-        
-        outStream2.write(outputLine) # Outputs each area value in the result array seperated by commas.
-        
-    outStream2.close()
-    #print(finalOutputArray[0])
-    #print(finalOutputArray[0])
-# Now I need to talk to Payton about this, to see what data he needs and how to output it to meet his standards
-    
-#    outStream2 = open("sliceData/sliceDefault.txt", "a+")
     
 
-
-        
-#         volIndex = bodyTotalVolumeNums.index(result[0])
-#         currentVolume = bodyWholeVol[volIndex]
-        
-#         #date&time , bodyNum , area , perimeter , circularity, asepct ratio,  volume , model wall's radius
-#         tableEntry = "%s , %d , %d , %d , %d \n" %(initialTime, result[0], scaledResult, currentVolume, wallRadius)
-#         outStream2.write(tableEntry) # Outputs each area value in the result array seperated by commas.
-        
-#     outStream2.write("---")
-#     outStream2.close()
-#     print("\n\nSliceStats_M is DONE.")
-# #Calls the function main to initate program.
 
 def grabParams():
     params = []
