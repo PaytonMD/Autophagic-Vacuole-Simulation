@@ -7,15 +7,15 @@ library(glpkAPI)
 # Generates positions for the bodies - first randomly positioned in a sphere, then clumped with compactSpheres
 # now for genballs, enter number of bodies and vacuole radius. will output txt file with
 # vacuole and bodies radii and x y z center locations in positive octant
-genBalls = function(bodies=15, scale=500, mu=5, sigma=0.2, iterations=4) {
+genBalls = function(bodies=15, scale=1000, mu=5, sigma=0.2, iterations=4) {
   # Generate N points on a 3-dimensional unit sphere.
   r <- rlnorm(bodies, mu, sigma) # can change the 5 and 0.2 to change mean(mu) and std. dev(sigma) on norm log scale respectively
   N = length(r)
   X = generate.point.in.sphere (N,3)
   # generate random distances from the center, with maximum = vacrad
   D = runif(N)*scale
-  # scale each point by the random distance, so that all are inside vacuole (sphere), and recenter that sphere to positive coordinates
-  pos = X*D+scale
+  # scale each point by the random distance, so that all are inside vacuole (sphere)
+  pos = X*D
   # transpose matrix, so that rows are coordinates and columns are points, as required later
   tpos = t(pos)
   Y = t(pos)
@@ -27,9 +27,13 @@ genBalls = function(bodies=15, scale=500, mu=5, sigma=0.2, iterations=4) {
   }
   list1 <- list(R=R, orig=tpos,compact=Y, cellSize=cellSize)
   print (list1)
-  compact <- t(list1$compact)
+  compact <- t(list1$compact) 
+  #translate all coordinates to the positive quadrant
+  for (i in 1:ncol(compact)){
+	compact[,i]=compact[,i]+(scale-mean(compact[,i]))}
   output_spheregen <- cbind(as.numeric(R), compact)
   output_spheregen <- rbind(cellSize/2, output_spheregen)
+  print (output_spheregen)
   write.table(output_spheregen, "rData.txt", row.names = FALSE, col.names = FALSE)
 }
 

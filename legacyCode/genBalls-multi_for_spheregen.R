@@ -21,8 +21,8 @@ genBalls = function(mu=5, sigma=0.2, scale=1000, repeats = 1, runindex=1) {
   X = generate.point.in.sphere (N,3)
   # generate random distances from the center, with maximum = vacrad
   D = runif(N)*scale
-  # scale each point by the random distance, so that all are inside vacuole (sphere), and recenter that sphere to positive coordinates
-  pos = X*D+scale
+  # scale each point by the random distance, so that all are inside vacuole (sphere)
+  pos = X*D
   # transpose matrix, so that rows are coordinates and columns are points, as required later
   tpos = t(pos)
   Y = t(pos)
@@ -36,6 +36,8 @@ genBalls = function(mu=5, sigma=0.2, scale=1000, repeats = 1, runindex=1) {
   list1 <- list(R=R, orig=tpos,compact=Y, cellSize=cellSize)
   print (list1)
   compact <- t(list1$compact)
+    for (i in 1:ncol(compact)){
+	compact[,i]=compact[,i]+(scale-mean(compact[,i]))}
   output_spheregenN <- cbind(as.numeric(R), compact)
   output_spheregenN <- rbind(cellSize/2, output_spheregenN)
   output_spheregenN <- cbind(runindex, bodies, mu, sigma, output_spheregenN)
