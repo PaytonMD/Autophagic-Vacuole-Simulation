@@ -7,7 +7,7 @@ library(glpkAPI)
 # Generates positions for the bodies - first randomly positioned in a sphere, then clumped with compactSpheres
 # now for genballs, enter number of bodies and vacuole radius. will output txt file with
 # vacuole and bodies radii and x y z center locations in positive octant
-genBalls = function(mu=5, sigma=0.2, scale=1000, repeats = 1, runindex=1) {
+genBalls = function(mu=5, sigma=0.2, vacRad=1000, repeats = 1, runindex=1) {
   print ("starting run count at")
   print (runindex)
   output_spheregen = matrix (ncol = 8, nrow =0)
@@ -16,17 +16,17 @@ genBalls = function(mu=5, sigma=0.2, scale=1000, repeats = 1, runindex=1) {
   reps = 0
   while (reps < repeats) {
     # Generate N points on a 3-dimensional unit sphere.
-  r <- rlnorm(bodies, mu, sigma) # can change the 5 and 0.2 to change mean(mu) and std. dev(sigma) on norm log scale respectively
+  r <- rlnorm(bodies, mu, sigma) # can change the 5 and 0.2 to change mean(mu) and std. dev(sigma) on norm log vacRad respectively
   N = length(r)
   X = generate.point.in.sphere (N,3)
   # generate random distances from the center, with maximum = vacrad
-  D = runif(N)*scale
-  # scale each point by the random distance, so that all are inside vacuole (sphere)
+  D = runif(N)*vacRad
+  # vacRad each point by the random distance, so that all are inside vacuole (sphere)
   pos = X*D
   # transpose matrix, so that rows are coordinates and columns are points, as required later
   tpos = t(pos)
   Y = t(pos)
-  cellSize=2*scale
+  cellSize=2*vacRad
   R = r[1:N]
   iterations=4
   for ( i in 1:iterations) {
@@ -37,7 +37,7 @@ genBalls = function(mu=5, sigma=0.2, scale=1000, repeats = 1, runindex=1) {
   print (list1)
   compact <- t(list1$compact)
     for (i in 1:ncol(compact)){
-	compact[,i]=compact[,i]+(scale-mean(compact[,i]))}
+	compact[,i]=compact[,i]+(vacRad-mean(compact[,i]))}
   output_spheregenN <- cbind(as.numeric(R), compact)
   output_spheregenN <- rbind(cellSize/2, output_spheregenN)
   output_spheregenN <- cbind(runindex, bodies, mu, sigma, output_spheregenN)
